@@ -1,0 +1,100 @@
+<core:FragmentDefinition 
+	xmlns:core="sap.ui.core"
+	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns="sap.m" 
+	xmlns:l="sap.ui.layout"
+	xmlns:f="sap.ui.layout.form"
+	xmlns:fb="sap.ui.comp.filterbar" 
+	xmlns:u="sap.ui.unified"
+	xmlns:html="http://www.w3.org/1999/xhtml">
+	<Dialog draggable="true" title="Valor cápita" contentWidth="40%" contentHeight="50%">
+		<content >
+            <l:VerticalLayout  visible="{VisibleModel>/valorCapitaDialog}" class="sapUiContentPadding" width="100%">
+		<Label text="Valor cápita" visible="{VisibleModel>/valorCapitaDialog}" design="Bold" labelFor="input-a" />
+		<Input id="input-a" editable="{EnabledModel>/tabla}" value="{ValorCapita>/ValorCapita}" visible="{VisibleModel>/valorCapitaDialog}" required="true" width="50%" change="onChangeValorCap"/>
+
+		<Label
+        visible="{VisibleModel>/valorCapitaDialog}"
+			text="Vigencia desde"
+			labelFor="input-b" />
+		<DatePicker required="true" editable="{EnabledModel>/tabla}" enabled="{EnabledModel>/fechaDesdeDialog}" visible="{VisibleModel>/valorCapitaDialog}" id="vigCapitaDesde" width="60%" value="{path: 'ValorCapita>/FechaIni',
+                                                  type: 'sap.ui.model.odata.type.DateTime',
+                                                  constraints: { 
+                                                      displayFormat:'Date'
+                                                  }, 
+                                                  formatOptions: { 
+                                                    UTC: true,                                                    
+                                                    pattern: 'dd/MM/yyyy'
+                                                  } 
+                                                }" 
+                                        valueFormat="dd/MM/yyyy" displayFormat="short" change="onChangeDateDialogInicio"/>
+
+		<Label text="Vigencia hasta" labelFor="input-c" visible="{VisibleModel>/valorCapitaDialog}" />
+		<DatePicker required="true" editable="{EnabledModel>/tabla}" visible="{VisibleModel>/valorCapitaDialog}" id="vigCapitaHasta" width="60%" value="{path: 'ValorCapita>/FechaFin',
+                                                  type: 'sap.ui.model.odata.type.DateTime',
+                                                  constraints: { 
+                                                      displayFormat:'Date'
+                                                  }, 
+                                                  formatOptions: { 
+                                                    UTC: true,                                                    
+                                                    pattern: 'dd/MM/yyyy'
+                                                  } 
+                                                }" 
+                                        valueFormat="dd/MM/yyyy" displayFormat="short" change="onChangeDateDialogFin"/>
+        <Button text="Agregar" enabled="{EnabledModel>/tabla}" type="Emphasized" press="onAddValorCapita"></Button>
+	</l:VerticalLayout>
+    <Table 
+                                items="{ValorCapita>/itemsDialog}"
+                                growing="true" growingThreshold="10">
+                                
+                                <columns>
+                                    <Column >
+                                        <Text text="Valor" />
+                                    </Column>
+                                    <Column >
+                                        <Text text="Vig. Desde" />
+                                    </Column>
+                                    <Column >
+                                        <Text text="Vig. Hasta" />
+                                    </Column>
+                                    <Column hAlign="Center">
+                                        <Text width="3rem" text="" />
+                                    </Column>
+                                </columns>
+                                <items>
+                                    <ColumnListItem>
+                                        <cells> 
+                                            <Input editable="{EnabledModel>/tabla}" value="{ValorCapita>ValorCapita}" placeholder="Valor cápita.."  change="onChangeValorCapPos"/>
+                                            <DatePicker editable="false"  value="{path: 'ValorCapita>FechaIni',
+                                                  type: 'sap.ui.model.odata.type.DateTime',
+                                                  constraints: { 
+                                                      displayFormat:'Date'
+                                                  }, 
+                                                  formatOptions: { 
+                                                    UTC: true,                                                    
+                                                    pattern: 'dd/MM/yyyy'
+                                                  } 
+                                                }" 
+                                        valueFormat="dd/MM/yyyy" displayFormat="short"/>
+                                            <DatePicker editable="false" value="{path: 'ValorCapita>FechaFin',
+                                                  type: 'sap.ui.model.odata.type.DateTime',
+                                                  constraints: { 
+                                                      displayFormat:'Date'
+                                                  }, 
+                                                  formatOptions: { 
+                                                    UTC: true,                                                    
+                                                    pattern: 'dd/MM/yyyy'
+                                                  } 
+                                                }" 
+                                        valueFormat="dd/MM/yyyy" displayFormat="short"/>
+                                            <Button icon="sap-icon://delete" enabled="{EnabledModel>/tabla}" type="Reject" press="onDeleteValorCapita"></Button>
+                                        </cells>
+                                    </ColumnListItem>
+                                </items>
+                            </Table>
+		</content>
+		<endButton>
+			<Button text="{i18n>Cerrar}" type="Default" press="onCloseValorDialog"></Button>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

@@ -1,0 +1,59 @@
+<core:FragmentDefinition 
+	xmlns:core="sap.ui.core"
+	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns="sap.m" 
+	xmlns:l="sap.ui.layout"
+	xmlns:f="sap.ui.layout.form"
+	xmlns:fb="sap.ui.comp.filterbar" 
+	xmlns:u="sap.ui.unified"
+	xmlns:html="http://www.w3.org/1999/xhtml">
+	<Dialog draggable="true" title="Coberturas" contentWidth="38%" contentHeight="60%">
+		<content >
+            <Input class="sapUiTinyMargin"     width="50%"
+            placeholder="Seleccione material.."
+                                               value="{ocPos>Matnr}"
+                                               required="true"
+                                               editable="{EnabledModel>/tabla}"
+                                               id="matnr" showSuggestion="true"
+                                               showValueHelp="true"                                            
+                                               valueHelpOnly="true"
+                                               valueHelpRequest=".onValueHelpMatRequest"
+                                               change=".onMatnrChange"
+                                               suggestionItems="{path: '/MATERIAL_MatGroupSet'}">
+                                               <suggestionItems>
+                                                    <core:ListItem
+                                                        key="{Description}"
+                                                        text="{Matnr}"/>
+                                                </suggestionItems>
+                                        </Input>      
+			            <Table 
+                                items="{ValorCapita>/itemMat}"
+                                growing="true" growingThreshold="10">
+                                
+                                <columns>
+                                    <Column >
+                                        <Text text="Código" />
+                                    </Column>
+                                    <Column >
+                                        <Text text="Descripción" />
+                                    </Column>
+                                    <Column >
+                                        <Text text="" />
+                                    </Column>
+                                </columns>
+                                <items>
+                                    <ColumnListItem>
+                                        <cells>
+                                            <Text text="{ValorCapita>Matnr}" />
+                                            <Text text="{ValorCapita>Description}" />
+                                            <Button icon="sap-icon://delete" enabled="{EnabledModel>/tabla}" type="Reject" press="onDeleteCobertura"></Button>
+                                        </cells>
+                                    </ColumnListItem>
+                                </items>
+                            </Table>
+		</content>
+		<endButton>
+			<Button text="{i18n>Cerrar}" type="Default" press="onCloseMaterialesDialog"></Button>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

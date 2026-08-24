@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=https://sap.github.io/ui5-tooling/schema/ui5.yaml.json
+
+specVersion: "4.0"
+metadata:
+  name: com.nespola.contratoswf
+type: application
+framework:
+  name: SAPUI5
+  version: "1.130.11"
+  libraries:
+    - name: sap.m
+    - name: sap.ui.core
+    - name: sap.f
+    - name: sap.ui.comp
+    - name: sap.ui.generic.app
+    - name: sap.ui.table
+    - name: sap.ushell
+builder:
+  resources:
+    excludes:
+      - /test/**
+      - /localService/**
+  customTasks:
+    - name: deploy-to-abap
+      afterTask: generateCachebusterInfo
+      configuration:
+        target:
+          url: https://vhwuzdevci.sap.solnacientesa.com.ar:44300
+          client: '400'
+        app:
+          name: ZUI_SD_CONTRACT
+          description: Contratos SD
+          package: Z001
+          transport: DEVK901007
+        exclude:
+          - /test/
+          - /localService/

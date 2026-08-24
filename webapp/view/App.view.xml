@@ -1,0 +1,1680 @@
+<mvc:View
+    controllerName="com.nespola.contratoswf.controller.App"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core"
+    xmlns:mvc="sap.ui.core.mvc"
+    displayBlock="true"
+    xmlns="sap.m"
+    xmlns:l="sap.ui.layout"
+    xmlns:fb="sap.ui.comp.filterbar"
+    xmlns:upload="sap.m.upload"
+    xmlns:ux="sap.uxap"
+    xmlns:tnt="sap.tnt"
+    xmlns:unified="sap.ui.unified"
+>
+    <Shell
+        id="shell"
+        appWidthLimited="false"
+    >
+        <App
+            id="app"
+            height="100%"
+        >
+            <pages>
+                <Page
+                    id="page"
+                    showHeader="{= ${ConsultaModel>/btnResponder_visible} || ${ConsultaModel>/btnConsulta_visible} ? true : false }"
+                    busy="{busyModel>/page}"
+                    busyIndicatorDelay="0"
+                >
+                    <headerContent>
+                        <Button
+                            text="{ConsultaModel>/btnConsulta}"
+                            visible="{ConsultaModel>/btnConsulta_visible}"
+                            press="onQuestion"
+                            type="Emphasized"
+                            class="sapUiSmallMarginTop"
+                        />
+                        <Button
+                            text="{ConsultaModel>/btnResponder}"
+                            visible="{ConsultaModel>/btnResponder_visible}"
+                            press="onResponseQuestion"
+                            type="Emphasized"
+                            class="sapUiSmallMarginTop"
+                        />
+                    </headerContent>
+                    <content>
+                        <IconTabBar
+                            id="idIconTabBarInlineMode"
+                            headerMode="Inline"
+                            expanded="{device>/isNoPhone}"
+                            class="sapUiResponsiveContentPadding"
+                        >
+                            <items>
+                                <IconTabFilter
+                                    text="Inf. Principal"
+                                    key="info"
+                                    icon="sap-icon://information"
+                                >
+                                    <l:Grid
+                                        defaultSpan="XL6 L6 M12 S12"
+                                        class="sapUiNoMargin"
+                                        visible="{AuxModel>/header}"
+                                    >
+                                        <VBox class="sapUiTinyMargin">
+                                            <l:HorizontalLayout>
+                                                <Label
+                                                    text="{i18n>Sociedad}:"
+                                                    class="sapUiSmallMarginTop sapUiTinyMarginEnd"
+                                                />
+                                                <Text
+                                                    text="{context>/sociedad}"
+                                                    class="sapUiSmallMarginTop"
+                                                />
+                                            </l:HorizontalLayout>
+
+                                            <l:HorizontalLayout>
+                                                <Label
+                                                    text="Cliente"
+                                                    visible="{= ${context>/client} ? true:false}"
+                                                    class="sapUiSmallMarginTop sapUiTinyMarginEnd"
+                                                />
+                                                <Text
+                                                    text="{context>/client}"
+                                                    visible="{= ${context>/client} ? true:false}"
+                                                    class="sapUiSmallMarginTop"
+                                                />
+                                            </l:HorizontalLayout>
+                                            <l:HorizontalLayout>
+                                                <Label
+                                                    text="Nombre de usuario:"
+                                                    class="sapUiSmallMarginTop sapUiTinyMarginEnd"
+                                                />
+                                                <Text
+                                                    text="{header>/ernam}"
+                                                    class="sapUiSmallMarginTop"
+                                                />
+                                            </l:HorizontalLayout>
+                                            <!-- <HBox alignItems="Center">
+                                                <Button
+                                                    text="{ConsultaModel>/btnConsulta}"
+                                                    visible="{ConsultaModel>/btnConsulta_visible}"
+                                                    press="onQuestion"
+                                                    type="Emphasized"
+                                                    class="sapUiSmallMarginTop"
+                                                />
+                                                <Button
+                                                    text="{ConsultaModel>/btnResponder}"
+                                                    visible="{ConsultaModel>/btnResponder_visible}"
+                                                    press="onResponseQuestion"
+                                                    type="Emphasized"
+                                                    class="sapUiSmallMarginTop"
+                                                />
+                                            </HBox> -->
+                                        </VBox>
+                                        <VBox class="sapUiTinyMargin">
+                                            <l:HorizontalLayout>
+                                                <Label
+                                                    text="Número de solicitud:"
+                                                    class="sapUiSmallMarginTop sapUiTinyMarginEnd"
+                                                />
+                                                <tnt:InfoLabel
+                                                    text="{header>/reqno}"
+                                                    class="sapUiSmallMarginTop"
+                                                    renderMode="Narrow"
+                                                    colorScheme="5"
+                                                    displayOnly="true"
+                                                />
+                                            </l:HorizontalLayout>
+                                            <l:HorizontalLayout>
+                                                <Label
+                                                    text="Fecha y hora de creación:"
+                                                    class="sapUiSmallMarginTop sapUiTinyMarginEnd"
+                                                />
+                                                <Text
+                                                    text="{path: 'header>/erdat', type: 'sap.ui.model.type.Date', formatOptions: { source: { pattern: 'yyyy-MM-ddTHH:mm:ss' }, pattern: 'dd/MM/yyyy' } }"
+                                                    class="sapUiSmallMarginTop"
+                                                />
+                                            </l:HorizontalLayout>
+                                        </VBox>
+                                        <!-- <VBox class="sapUiTinyMargin">
+                                            <l:HorizontalLayout>
+                                                <Label
+                                                    text="Nombre de usuario:"
+                                                    class="sapUiSmallMarginTop sapUiTinyMarginEnd"
+                                                />
+                                                <Text
+                                                    text="{header>/ernam}"
+                                                    class="sapUiSmallMarginTop"
+                                                />
+                                            </l:HorizontalLayout>
+                                        </VBox> -->
+                                    </l:Grid>
+                                    <Panel
+                                        class="sapUiNoMargin"
+                                        id="idFbOptyp"
+                                        backgroundDesign="Transparent"
+                                    >
+                                        <FlexBox alignItems="Start">
+                                            <Label
+                                                labelFor="rbg4"
+                                                class="sapUiSmallMarginBottom sapUiTinyMarginEnd"
+                                                text="{oModelTitle>/title}"
+                                                visible="{AuxModel>/header}"
+                                            />
+                                            <FlexBox alignItems="Start">
+                                                <RadioButtonGroup
+                                                    width=""
+                                                    columns="5"
+                                                    valueState="Information"
+                                                    editable="{EnabledModel>/tipos}"
+                                                    class="sapUiSmallMarginBottom"
+                                                    visible="{AuxModel>/header}"
+                                                >
+                                                    <RadioButton
+                                                        text="Creación"
+                                                        select="onSelectTipo"
+                                                        selected="{AuxModel>/creacion}"
+                                                    />
+                                                    <RadioButton
+                                                        text="Modificación"
+                                                        select="onSelectTipo"
+                                                        selected="{AuxModel>/modificacion}"
+                                                    />
+                                                    <RadioButton
+                                                        text="Renovación"
+                                                        select="onSelectTipo"
+                                                        selected="{AuxModel>/renovacion}"
+                                                    />
+                                                    <layoutData>
+                                                        <FlexItemData
+                                                            growFactor="1"
+                                                        />
+                                                    </layoutData>
+                                                </RadioButtonGroup>
+                                            </FlexBox>
+                                        </FlexBox>
+                                        <Label
+                                            text="Tipo de contrato:"
+                                            labelFor="tipoContrato"
+                                        />
+                                        <FlexBox alignItems="Start">
+                                            <ComboBox
+                                                id="tipoContrato"
+                                                change="onSelectTipoContrato"
+                                                required="true"
+                                                editable="{EnabledModel>/tipoContrato}"
+                                                selectedKey="{AuxModel>/Cotyp}"
+                                                items="{Datos>/TipoContrato}"
+                                            >
+                                                <core:Item
+                                                    key="{Datos>Id}"
+                                                    text="{Datos>Id} - {Datos>Description}"
+                                                />
+                                                <layoutData>
+                                                    <FlexItemData
+                                                        growFactor="1"
+                                                    />
+                                                </layoutData>
+                                            </ComboBox>
+                                            <TextArea
+                                                visible="{AuxModel>/header}"
+                                                value="{header>/textLevel}"
+                                                editable="false"
+                                                width="100%"
+                                                valueLiveUpdate="false"
+                                                rows="3"
+                                            >
+                                                <layoutData>
+                                                    <FlexItemData
+                                                        growFactor="1"
+                                                    />
+                                                </layoutData>
+                                            </TextArea>
+                                        </FlexBox>
+                                    </Panel>
+                                    <Panel
+                                        backgroundDesign="Transparent"
+                                        visible="{VisibleModel>/visibleCrear}"
+                                        class="sapUiNoMargin"
+                                    >
+                                        <FlexBox alignItems="Start">
+                                            <Label
+                                                labelFor="rbg3"
+                                                text="{oModelTitle>/title}"
+                                                visible="{VisibleModel>/visibleCrear}"
+                                            />
+                                            <RadioButtonGroup
+                                                width=""
+                                                id="rbg3"
+                                                columns="5"
+                                                valueState="Information"
+                                                editable="{EnabledModel>/tipos}"
+                                                class="sapUiTinyMargin"
+                                                visible="{VisibleModel>/visibleCrear}"
+                                            >
+                                                <RadioButton
+                                                    id="creacion"
+                                                    text="Creación"
+                                                    select="onSelectTipo"
+                                                    selected="{AuxModel>/creacion}"
+                                                />
+                                                <RadioButton
+                                                    id="modificacion"
+                                                    text="Modificación"
+                                                    select="onSelectTipo"
+                                                    selected="{AuxModel>/modificacion}"
+                                                />
+                                                <RadioButton
+                                                    id="renovacion"
+                                                    text="Renovación"
+                                                    select="onSelectTipo"
+                                                    selected="{AuxModel>/renovacion}"
+                                                />
+                                                <layoutData>
+                                                    <FlexItemData
+                                                        growFactor="1"
+                                                    />
+                                                </layoutData>
+                                            </RadioButtonGroup>
+                                        </FlexBox>
+                                    </Panel>
+                                    <f:Form
+                                        id="FormChange354"
+                                        class="sapUiNoMargin"
+                                        editable="true"
+                                    >
+                                        <!--<f:title>
+                                                <core:Title text="{i18n>Ente}" />
+                                            </f:title>-->
+                                        <f:layout>
+                                            <f:ResponsiveGridLayout
+                                                labelSpanXL="3"
+                                                labelSpanL="3"
+                                                labelSpanM="3"
+                                                labelSpanS="12"
+                                                adjustLabelSpan="false"
+                                                emptySpanXL="4"
+                                                emptySpanL="4"
+                                                emptySpanM="4"
+                                                emptySpanS="0"
+                                                columnsXL="2"
+                                                columnsL="2"
+                                                columnsM="2"
+                                                singleContainerFullSize="false"
+                                            />
+                                            <!--<f:ColumnLayout columnsM="2" columnsL="2" columnsXL="2"/>-->
+                                        </f:layout>
+                                        <f:formContainers>
+                                            <f:FormContainer>
+                                                <f:formElements>
+                                                    <f:FormElement
+                                                        label="Número de póliza"
+                                                        visible="{VisibleModel>/NroPedido}"
+                                                    >
+                                                        <f:fields>
+                                                            <Input
+                                                                placeholder="Seleccione nro de pedido.."
+                                                                editable="{EnabledModel>/nroPedido}"
+                                                                value="{header>/vbeln}"
+                                                                required="true"
+                                                                id="nropedidox"
+                                                                showSuggestion="true"
+                                                                showValueHelp="true"
+                                                                valueHelpOnly="true"
+                                                                valueHelpRequest=".onValueHelpRequest"
+                                                                suggestionItems="{path: '/SalesOrderSet'}"
+                                                            >
+                                                                <suggestionItems
+                                                                >
+                                                                    <core:ListItem
+                                                                        key="{Vbeln}"
+                                                                        text="{Auart}"
+                                                                    />
+                                                                </suggestionItems>
+                                                            </Input>
+                                                        </f:fields>
+                                                    </f:FormElement>
+                                                    <f:FormElement
+                                                        label="Número lista de coberturas"
+                                                        visible="{VisibleModel>/NroSolicitud}"
+                                                    >
+                                                        <f:fields>
+                                                            <Input
+                                                                placeholder="Seleccione nro lista de coberturas.."
+                                                                value="{header>/banfn}"
+                                                                editable="{EnabledModel>/nroSolped}"
+                                                                required="true"
+                                                                id="nrosolped"
+                                                                showSuggestion="true"
+                                                                showValueHelp="true"
+                                                                valueHelpOnly="true"
+                                                                valueHelpRequest=".onValueHelpRequest"
+                                                                suggestionItems="{path: '/PurchaseRequisitionSet'}"
+                                                            >
+                                                                <suggestionItems
+                                                                >
+                                                                    <core:ListItem
+                                                                        key="{Banfn}"
+                                                                        text="{Bsart}"
+                                                                    />
+                                                                </suggestionItems>
+                                                            </Input>
+                                                        </f:fields>
+                                                    </f:FormElement>
+                                                    <f:FormElement
+                                                        label="WF Anteriores Cerrados"
+                                                        visible="{VisibleModel>/wfanteriores}"
+                                                    >
+                                                        <f:fields>
+                                                            <Input
+                                                                placeholder="Seleccione Nro de WF.."
+                                                                value="{header>/reqno}"
+                                                                editable="{EnabledModel>/wfanteriores}"
+                                                                required="true"
+                                                                id="wfcerrados"
+                                                                showSuggestion="true"
+                                                                showValueHelp="true"
+                                                                valueHelpOnly="true"
+                                                                valueHelpRequest=".onValueHelpRequest"
+                                                                suggestionItems="{path: 'postService>HeaderSet'}"
+                                                            >
+                                                                <suggestionItems
+                                                                >
+                                                                    <core:ListItem
+                                                                        key="{postService>Reqno}"
+                                                                        text="{postService>Lifnr}"
+                                                                        additionalText="{postService>Kunnr}"
+                                                                    />
+                                                                </suggestionItems>
+                                                            </Input>
+                                                        </f:fields>
+                                                    </f:FormElement>
+                                                    <f:FormElement
+                                                        label="{i18n>Sociedad}"
+                                                        visible="{= ${VisibleModel>/visibleCrear}  &amp;&amp; ${VisibleModel>/Sociedad} }"
+                                                    >
+                                                        <f:fields>
+                                                            <!--<ComboBox id="sociedad"
+                                                                            change="onBukrsChange"
+                                                                            editable="{EnabledModel>/sociedad}"
+                                                                            required="true"
+                                                                            selectedKey="{header>/bukrs}"
+                                                                            items="{path: '/COMPANYSet', filters : [{ path : 'Id', operator : 'EQ', value1 : '1000' }, { path : 'Id', operator : 'EQ', value1 : '5000' } ]}">
+                                                                    <core:Item key="{Id}" text="{Id} - {Description}" />
+                                                                </ComboBox>-->
+                                                            <ComboBox
+                                                                id="sociedad"
+                                                                change="onBukrsChange"
+                                                                editable="{EnabledModel>/sociedad}"
+                                                                required="true"
+                                                                selectedKey="{header>/bukrs}"
+                                                                items="{SociedadModel>/results}"
+                                                            >
+                                                                <core:Item
+                                                                    key="{SociedadModel>Id}"
+                                                                    text="{SociedadModel>Id} - {SociedadModel>Description}"
+                                                                />
+                                                            </ComboBox>
+                                                        </f:fields>
+                                                    </f:FormElement>
+                                                    <f:FormElement
+                                                        label="{i18n>Sociedad}"
+                                                        visible="{VisibleModel>/SociedadModifRenov}"
+                                                    >
+                                                        <f:fields>
+                                                            <ComboBox
+                                                                id="sociedadModif"
+                                                                change="onBukrsChange"
+                                                                editable="false"
+                                                                required="true"
+                                                                selectedKey="{header>/bukrs}"
+                                                                items="{path: 'SociedadModel>/results'}"
+                                                            >
+                                                                <core:Item
+                                                                    key="{SociedadModel>Id}"
+                                                                    text="{SociedadModel>Id} - {SociedadModel>Description}"
+                                                                />
+                                                            </ComboBox>
+                                                        </f:fields>
+                                                    </f:FormElement>
+                                                    <f:FormElement
+                                                        label="Cliente"
+                                                        visible="{= ${VisibleModel>/visibleCrear} &amp;&amp; ${VisibleModel>/ClienteCab}}"
+                                                    >
+                                                        <f:fields>
+                                                            <Input
+                                                                editable="{EnabledModel>/clienteCab}"
+                                                                width="100%"
+                                                                placeholder="Seleccione cliente.."
+                                                                value="{header>/kunnr}"
+                                                                required="true"
+                                                                id="cliente"
+                                                                showSuggestion="true"
+                                                                showValueHelp="true"
+                                                                valueHelpOnly="true"
+                                                                valueHelpRequest=".onValueHelpRequest"
+                                                                change=".onMatnrChange"
+                                                                suggestionItems="{path: '/CustomerSet'}"
+                                                            >
+                                                                <suggestionItems
+                                                                >
+                                                                    <core:ListItem
+                                                                        key="{Kunnr}"
+                                                                        text="{= parseInt(${Description})} - {Description2}"
+                                                                    />
+                                                                </suggestionItems>
+                                                            </Input>
+                                                        </f:fields>
+                                                    </f:FormElement>
+                                                    <f:FormElement
+                                                        label="Propiedad"
+                                                        visible="{VisibleModel>/Propiedad}"
+                                                    >
+                                                        <f:fields>
+                                                            <ComboBox
+                                                                id="propiedad"
+                                                                required="true"
+                                                                editable="{EnabledModel>/propiedad}"
+                                                                selectedKey="{header>/property}"
+                                                                items="{path: '/PropertySet'}"
+                                                            >
+                                                                <core:Item
+                                                                    key="{= parseInt(${Id})}"
+                                                                    text="{Description}"
+                                                                />
+                                                            </ComboBox>
+                                                        </f:fields>
+                                                    </f:FormElement>
+                                                    <f:FormElement
+                                                        label="Rol"
+                                                        visible="{VisibleModel>/Rol}"
+                                                    >
+                                                        <f:fields>
+                                                            <ComboBox
+                                                                id="rol"
+                                                                required="true"
+                                                                editable="{EnabledModel>/rol}"
+                                                                selectedKey="{header>/rol}"
+                                                                items="{path: '/DOMAINSet', filters : [{ path : 'Domname', operator : 'EQ', value1 : 'ZCONTRACT_ROL' }] }"
+                                                            >
+                                                                <core:Item
+                                                                    key="{DomvalueL}"
+                                                                    text="{DomvalueL} - {Ddtext}"
+                                                                />
+                                                            </ComboBox>
+                                                        </f:fields>
+                                                    </f:FormElement>
+                                                    <f:FormElement
+                                                        label="Tipo de actualización"
+                                                        visible="{= ${VisibleModel>/visibleCrear}  &amp;&amp; ${VisibleModel>/TipoActualizacion}}"
+                                                    >
+                                                        <f:fields>
+                                                            <ComboBox
+                                                                id="tipoActualizacion"
+                                                                change="onTipoActualizacion"
+                                                                editable="{EnabledModel>/tipoActualizacion}"
+                                                                required="true"
+                                                                selectedKey="{header>/tipoAjuste}"
+                                                                items="{ path: '/DOMAINSet',filters : [{ path : 'Domname', operator : 'EQ', value1 : 'ZTIPO_AJUSTE' }] }"
+                                                            >
+                                                                <core:Item
+                                                                    key="{DomvalueL}"
+                                                                    text="{DomvalueL} - {Ddtext}"
+                                                                />
+                                                            </ComboBox>
+                                                        </f:fields>
+                                                    </f:FormElement>
+                                                    <f:FormElement
+                                                        label="Contraparte"
+                                                        visible="{VisibleModel>/Cliente}"
+                                                    >
+                                                        <f:fields>
+                                                            <Input
+                                                                placeholder="Seleccione cliente.."
+                                                                value="{header>/kunnr}"
+                                                                required="true"
+                                                                editable="{EnabledModel>/cliente}"
+                                                                id="clientetomador"
+                                                                showSuggestion="true"
+                                                                showValueHelp="true"
+                                                                valueHelpOnly="true"
+                                                                valueHelpRequest=".onValueHelpRequest"
+                                                                change=".onMatnrChange"
+                                                                suggestionItems="{path: '/CustomerSet'}"
+                                                            >
+                                                                <suggestionItems
+                                                                >
+                                                                    <core:ListItem
+                                                                        key="{Kunnr}"
+                                                                        text="{Description}"
+                                                                    />
+                                                                </suggestionItems>
+                                                            </Input>
+                                                        </f:fields>
+                                                    </f:FormElement>
+                                                    <f:FormElement
+                                                        label="Proveedor"
+                                                        visible="{VisibleModel>/Proveedor}"
+                                                    >
+                                                        <f:fields>
+                                                            <Input
+                                                                placeholder="Seleccione proveedor.."
+                                                                value="{header>/lifnr}"
+                                                                editable="{EnabledModel>/proveedor}"
+                                                                required="true"
+                                                                id="lifnr"
+                                                                showSuggestion="true"
+                                                                showValueHelp="true"
+                                                                valueHelpOnly="true"
+                                                                valueHelpRequest=".onValueHelpRequest"
+                                                                suggestionItems="{path: '/VENDORSet'}"
+                                                            >
+                                                                <suggestionItems
+                                                                >
+                                                                    <core:ListItem
+                                                                        key="{Id}"
+                                                                        text="{Description} - {Description2}"
+                                                                    />
+                                                                </suggestionItems>
+                                                            </Input>
+                                                        </f:fields>
+                                                    </f:FormElement>
+                                                    <f:FormElement
+                                                        label="Área responsable"
+                                                        visible="{VisibleModel>/AreaResponsable}"
+                                                    >
+                                                        <f:fields>
+                                                            <ComboBox
+                                                                id="areaResponsable"
+                                                                editable="{EnabledModel>/areaResp}"
+                                                                required="true"
+                                                                selectedKey="{header>/areaResp}"
+                                                                items="{/AreaSet}"
+                                                            >
+                                                                <core:Item
+                                                                    key="{Id}"
+                                                                    text="{Id} - {Description}"
+                                                                />
+                                                            </ComboBox>
+                                                        </f:fields>
+                                                    </f:FormElement>
+                                                    <f:FormElement
+                                                        label="Duración(días)"
+                                                        visible="{VisibleModel>/Duracion}"
+                                                    >
+                                                        <f:fields>
+                                                            <Input
+                                                                type="Number"
+                                                                required="true"
+                                                                editable="false"
+                                                                value="{header>/duracion}"
+                                                            />
+                                                        </f:fields>
+                                                    </f:FormElement>
+                                                    <f:FormElement
+                                                        label="Monto mes inicial"
+                                                        visible="{VisibleModel>/MontoInicial}"
+                                                    >
+                                                        <f:fields>
+                                                            <Input
+                                                                required="true"
+                                                                value="{header>/montoInicial} {header>/monedaMontinicial}"
+                                                                editable="{EnabledModel>/montoInicial}"
+                                                                change="onMontoInicialChange"
+                                                            />
+                                                        </f:fields>
+                                                    </f:FormElement>
+                                                    <f:FormElement
+                                                        label="Moneda"
+                                                        visible="{VisibleModel>/MonedaInicial}"
+                                                    >
+                                                        <f:fields>
+                                                            <ComboBox
+                                                                editable="{EnabledModel>/monedaInicial}"
+                                                                required="true"
+                                                                selectedKey="{header>/monedaMontinicial}"
+                                                                items="{path: '/CURRENCYSet' ,length : '9999999'}"
+                                                            >
+                                                                <core:Item
+                                                                    key="{Id}"
+                                                                    text="{Id} - {Description}"
+                                                                />
+                                                            </ComboBox>
+                                                        </f:fields>
+                                                    </f:FormElement>
+                                                    <f:FormElement
+                                                        label="Motivo del contrato"
+                                                        visible="{VisibleModel>/MotivoContrato}"
+                                                    >
+                                                        <f:fields>
+                                                            <TextArea
+                                                                required="true"
+                                                                editable="{EnabledModel>/resumenContrato}"
+                                                                value="{header>/resumenContrato}"
+                                                                showExceededText="true"
+                                                                maxLength="1000"
+                                                                width="100%"
+                                                                valueState="{= ${header>/resumenContrato}.length > 1000 ? 'Warning' : 'None'}"
+                                                                valueLiveUpdate="false"
+                                                                rows="6"
+                                                            />
+                                                        </f:fields>
+                                                    </f:FormElement>
+                                                    <f:FormElement
+                                                        label="Resúmen del contrato"
+                                                        visible="{VisibleModel>/ResumenContrato}"
+                                                    >
+                                                        <f:fields>
+                                                            <TextArea
+                                                                required="true"
+                                                                editable="{EnabledModel>/resumenContrato}"
+                                                                value="{header>/resumenContrato}"
+                                                                showExceededText="true"
+                                                                maxLength="1000"
+                                                                width="100%"
+                                                                valueState="{= ${header>/resumenContrato}.length > 1000 ? 'Warning' : 'None'}"
+                                                                valueLiveUpdate="false"
+                                                                rows="6"
+                                                            />
+                                                        </f:fields>
+                                                    </f:FormElement>
+                                                </f:formElements>
+                                            </f:FormContainer>
+                                            <f:FormContainer>
+                                                <f:FormElement
+                                                    label="Vigencia desde"
+                                                    visible="{VisibleModel>/Vigencia}"
+                                                >
+                                                    <f:fields>
+                                                        <DatePicker
+                                                            id="vigDesde"
+                                                            required="true"
+                                                            change="onChangeDateInicio"
+                                                            editable="{EnabledModel>/Vigencia}"
+                                                            value="{path: 'header>/fechaIni', type: 'sap.ui.model.odata.type.DateTime', constraints: { displayFormat:'Date' }, formatOptions: { UTC: true, pattern: 'dd/MM/yyyy' } }"
+                                                            valueFormat="dd/MM/yyyy"
+                                                            displayFormat="short"
+                                                        />
+                                                    </f:fields>
+                                                </f:FormElement>
+                                                <f:FormElement
+                                                    label="Vigencia hasta"
+                                                    visible="{VisibleModel>/VigenciaHasta}"
+                                                >
+                                                    <f:fields>
+                                                        <DatePicker
+                                                            id="vigHasta"
+                                                            required="true"
+                                                            change="onChangeDateFin"
+                                                            editable="{EnabledModel>/VigenciaHasta}"
+                                                            value="{path: 'header>/fechaFin', type: 'sap.ui.model.odata.type.DateTime', constraints: { displayFormat:'Date' }, formatOptions: { UTC: true, pattern: 'dd/MM/yyyy' } }"
+                                                            valueFormat="dd/MM/yyyy"
+                                                            displayFormat="short"
+                                                        />
+                                                    </f:fields>
+                                                </f:FormElement>
+                                                <f:formElements>
+                                                    <f:FormElement
+                                                        label=""
+                                                        visible="{VisibleModel>/ButtonNotion}"
+                                                    >
+                                                        <f:fields>
+                                                            <Button
+                                                                text="Notion"
+                                                                type="Negative"
+                                                                width="90%"
+                                                                press="OnNavNotion"
+                                                            >
+                                                                <layoutData>
+                                                                    <FlexItemData
+                                                                        growFactor="1"
+                                                                    />
+                                                                </layoutData>
+                                                            </Button>
+                                                        </f:fields>
+                                                    </f:FormElement>
+                                                    <f:FormElement
+                                                        label="Posee cláusula de ajuste"
+                                                        visible="{VisibleModel>/PoseeClausula}"
+                                                    >
+                                                        <f:fields>
+                                                            <CheckBox
+                                                                id="poseeClausula"
+                                                                selected="{header>/poseeClausula}"
+                                                                editable="{EnabledModel>/poseeClausula}"
+                                                                select="onPoseeClausula"
+                                                            />
+                                                        </f:fields>
+                                                    </f:FormElement>
+                                                    <f:FormElement
+                                                        label="Período ajuste"
+                                                        visible="{VisibleModel>/PeriodoAjuste}"
+                                                    >
+                                                        <f:fields>
+                                                            <ComboBox
+                                                                id="periodoAjuste"
+                                                                editable="{EnabledModel>/periodoAjuste}"
+                                                                required="true"
+                                                                selectedKey="{header>/periodoAjuste}"
+                                                                items="{path: '/DOMAINSet', filters : [{ path : 'Domname', operator : 'EQ', value1 : 'ZPER_AJUSTE' }]}"
+                                                            >
+                                                                <core:Item
+                                                                    key="{DomvalueL}"
+                                                                    text="{DomvalueL} - {Ddtext}"
+                                                                />
+                                                            </ComboBox>
+                                                        </f:fields>
+                                                    </f:FormElement>
+                                                    <f:FormElement
+                                                        label="Cláusula ajuste pactada"
+                                                        visible="{VisibleModel>/ClausulaPactada}"
+                                                    >
+                                                        <f:fields>
+                                                            <TextArea
+                                                                id="clausulaPactada"
+                                                                required="false"
+                                                                value="{header>/clausulaAjuste}"
+                                                                editable="{EnabledModel>/clausulaPactada}"
+                                                                rows="2"
+                                                            />
+                                                        </f:fields>
+                                                    </f:FormElement>
+                                                    <f:FormElement
+                                                        label="Objeto del contrato"
+                                                        visible="{VisibleModel>/ObjetoContrato}"
+                                                    >
+                                                        <f:fields>
+                                                            <TextArea
+                                                                required="true"
+                                                                editable="{EnabledModel>/objeto}"
+                                                                value="{header>/objeto}"
+                                                                rows="3"
+                                                            />
+                                                        </f:fields>
+                                                    </f:FormElement>
+                                                    <f:FormElement
+                                                        label="Coberturas"
+                                                        visible="{VisibleModel>/headerCoberturas}"
+                                                    >
+                                                        <f:fields>
+                                                            <Button
+                                                                icon="sap-icon://show-edit"
+                                                                press="openMaterialesHeaderDialog"
+                                                                enabled="{EnabledModel>/btnCobertura}"
+                                                            />
+                                                        </f:fields>
+                                                    </f:FormElement>
+                                                    <f:FormElement
+                                                        label="Coberturas."
+                                                        visible="{VisibleModel>/headerCoberturasRenov}"
+                                                    >
+                                                        <f:fields>
+                                                            <Button
+                                                                icon="sap-icon://show-edit"
+                                                                press="openMaterialesHeaderDialogRenov"
+                                                                enabled="{EnabledModel>/btnCobertura}"
+                                                            />
+                                                        </f:fields>
+                                                    </f:FormElement>
+                                                    <f:FormElement
+                                                        label="Depósito"
+                                                        visible="{VisibleModel>/Deposito}"
+                                                    >
+                                                        <f:fields>
+                                                            <Input
+                                                                required="false"
+                                                                value="{header>/deposito}"
+                                                                editable="{EnabledModel>/deposito}"
+                                                            />
+                                                        </f:fields>
+                                                    </f:FormElement>
+                                                    <f:FormElement
+                                                        label="Moneda"
+                                                        visible="{VisibleModel>/MonedaDeposito}"
+                                                    >
+                                                        <f:fields>
+                                                            <ComboBox
+                                                                editable="{EnabledModel>/monedaDeposito}"
+                                                                required="true"
+                                                                selectedKey="{header>/monedaDep}"
+                                                                items="{path: '/CURRENCYSet' ,length : '9999999'}"
+                                                            >
+                                                                <core:Item
+                                                                    key="{Id}"
+                                                                    text="{Id} - {Description}"
+                                                                />
+                                                            </ComboBox>
+                                                        </f:fields>
+                                                    </f:FormElement>
+                                                    <f:FormElement
+                                                        label="Motivo Modificación"
+                                                        visible="{VisibleModel>/MotivoModificacion}"
+                                                    >
+                                                        <f:fields>
+                                                            <ComboBox
+                                                                editable="{EnabledModel>/motivoModificacion}"
+                                                                selectedKey="{header>/motivo}"
+                                                                items="{path: '/ContractMotivoModSet'}"
+                                                            >
+                                                                <core:Item
+                                                                    key="{Motivo}"
+                                                                    text="{Descripcion}"
+                                                                />
+                                                            </ComboBox>
+                                                        </f:fields>
+                                                    </f:FormElement>
+                                                </f:formElements>
+                                            </f:FormContainer>
+                                        </f:formContainers>
+                                    </f:Form>
+                                    <Panel
+                                        id="idFbPos"
+                                        backgroundDesign="Transparent"
+                                        visible="{VisibleModel>/tabla}"
+                                    >
+                                        <VBox id="FragmentTableContent">
+                                            <Table
+                                                id="idPosTab"
+                                                items="{ path: 'contPos>/posData', templateShareable: false}"
+                                                visible="{VisibleModel>/tabla}"
+                                            >
+                                                <headerToolbar>
+                                                    <Toolbar>
+                                                        <content>
+                                                            <Title
+                                                                text="Polizas"
+                                                                level="H2"
+                                                            />
+                                                            <ToolbarSpacer />
+                                                            <Button
+                                                                visible="{VisibleModel>/plusButton}"
+                                                                icon="sap-icon://add"
+                                                                press="onAddLine"
+                                                                enabled="{EnabledModel>/tabla}"
+                                                            />
+                                                        </content>
+                                                    </Toolbar>
+                                                </headerToolbar>
+                                                <columns>
+                                                    <Column width="12em">
+                                                        <Label
+                                                            text="Ramo"
+                                                            required="true"
+                                                        />
+                                                    </Column>
+                                                    <Column width="10em">
+                                                        <Label
+                                                            text="Cobertura a facturar"
+                                                            required="true"
+                                                        />
+                                                    </Column>
+                                                    <Column
+                                                        width="15em"
+                                                        visible="{VisibleModel>/visibleCampo}"
+                                                    >
+                                                        <Label
+                                                            text="Valor capita"
+                                                        />
+                                                    </Column>
+                                                    <Column
+                                                        width="10em"
+                                                        visible="{VisibleModel>/visibleCampo}"
+                                                    >
+                                                        <Label
+                                                            text="Coberturas"
+                                                        />
+                                                    </Column>
+                                                    <Column
+                                                        width="5em"
+                                                        hAlign="End"
+                                                    >
+                                                        <Label
+                                                            text="Valor cápita"
+                                                            visible="{=${VisibleModel>/visibleCrear}}"
+                                                            required="true"
+                                                        />
+                                                    </Column>
+                                                    <Column
+                                                        width="4em"
+                                                        hAlign="Center"
+                                                        visible="{VisibleModel>/visibleCrear}"
+                                                    >
+                                                        <Label
+                                                            text="Coberturas"
+                                                            required="true"
+                                                        />
+                                                    </Column>
+                                                    <Column
+                                                        width="3em"
+                                                        visible="{VisibleModel>/visibleCrear}"
+                                                    >
+                                                        <Label text="" />
+                                                    </Column>
+                                                </columns>
+                                                <items>
+                                                    <ColumnListItem>
+                                                        <cells>
+                                                            <HBox>
+                                                                <Input
+                                                                    class="sapUiTinyMargin"
+                                                                    width="100%"
+                                                                    placeholder="Seleccione ramo.."
+                                                                    value="{contPos>auart}"
+                                                                    visible="{= !${AuxModel>/header}}"
+                                                                    editable="{EnabledModel>/tabla}"
+                                                                    required="true"
+                                                                    id="clasesolped"
+                                                                    showSuggestion="true"
+                                                                    showValueHelp="true"
+                                                                    valueHelpOnly="true"
+                                                                    valueHelpRequest=".onValueHelpRequest"
+                                                                    change=".onMatnrChange"
+                                                                    suggestionItems="{path: '/SalesDocType', filters : [{ path : 'Id', operator : 'GE', value1 : 'ZO' }, { path : 'Id', operator : 'LE', value1 : 'ZS' } ]}"
+                                                                >
+                                                                    <suggestionItems
+                                                                    >
+                                                                        <core:ListItem
+                                                                            key="{Id}"
+                                                                            text="{Description}"
+                                                                        />
+                                                                    </suggestionItems>
+                                                                </Input>
+                                                                <!--<Input class="sapUiTinyMargin"     width="80%" visible="{=${AuxModel>/header}}"
+                                                                         placeholder="Seleccione ramo.."
+                                                                                           value="{contPos>auartTxt}"
+                                                                                           editable="{EnabledModel>/tabla}">
+
+                                                                    </Input>-->
+                                                                <Text
+                                                                    wrapping="true"
+                                                                    text="{contPos>auartTxt}"
+                                                                    visible="{=${AuxModel>/header}}"
+                                                                />
+                                                            </HBox>
+                                                            <HBox>
+                                                                <Input
+                                                                    class="sapUiTinyMargin"
+                                                                    width="100%"
+                                                                    placeholder="Seleccione material.."
+                                                                    visible="{= !${AuxModel>/header}}"
+                                                                    value="{contPos>matnr}"
+                                                                    required="true"
+                                                                    editable="{EnabledModel>/tabla}"
+                                                                    id="coberturafact"
+                                                                    showSuggestion="true"
+                                                                    showValueHelp="true"
+                                                                    valueHelpOnly="true"
+                                                                    valueHelpRequest=".onValueHelpRequest"
+                                                                    change=".onMatnrChange"
+                                                                    suggestionItems="{path: '/MATERIAL_MatGroupSet'}"
+                                                                >
+                                                                    <suggestionItems
+                                                                    >
+                                                                        <core:ListItem
+                                                                            key="{Description}"
+                                                                            text="{Matnr}"
+                                                                        />
+                                                                    </suggestionItems>
+                                                                </Input>
+                                                                <Text
+                                                                    wrapping="true"
+                                                                    text="{contPos>matnrTxt}"
+                                                                    visible="{=${AuxModel>/header}}"
+                                                                />
+                                                            </HBox>
+                                                            <!--<Input id="txtValorCapita" value="{contPos>subposSop/0/valorCapita}" visible="{VisibleModel>/visibleCampo}" editable="{EnabledModel>/tabla}" class="sapUiTinyMargin"     width="100%" />-->
+                                                            <Table
+                                                                items="{path:'contPos>subposSop', templateShareable:true}"
+                                                                visible="{VisibleModel>/visibleCampo}"
+                                                            >
+                                                                <columns>
+                                                                    <Column>
+                                                                        <Text
+                                                                            text="Valor"
+                                                                        />
+                                                                    </Column>
+                                                                    <Column>
+                                                                        <Text
+                                                                            text="Fecha Ini"
+                                                                        />
+                                                                    </Column>
+                                                                    <Column>
+                                                                        <Text
+                                                                            text="Fecha Fin"
+                                                                        />
+                                                                    </Column>
+                                                                </columns>
+                                                                <items>
+                                                                    <ColumnListItem
+                                                                    >
+                                                                        <cells>
+                                                                            <Text
+                                                                                text="{contPos>valorCapita}"
+                                                                            />
+                                                                            <Text
+                                                                                text="{contPos>fechaIni}"
+                                                                            />
+                                                                            <Text
+                                                                                text="{contPos>fechaFin}"
+                                                                            />
+                                                                        </cells>
+                                                                    </ColumnListItem>
+                                                                </items>
+                                                            </Table>
+                                                            <Table
+                                                                items="{contPos>subposCov}"
+                                                                visible="{VisibleModel>/visibleCampo}"
+                                                            >
+                                                                <columns>
+                                                                    <Column>
+                                                                        <Text
+                                                                            text="Material"
+                                                                        />
+                                                                    </Column>
+                                                                </columns>
+                                                                <items>
+                                                                    <ColumnListItem
+                                                                    >
+                                                                        <cells>
+                                                                            <Text
+                                                                                text="{contPos>matnrTxt}"
+                                                                            />
+                                                                        </cells>
+                                                                    </ColumnListItem>
+                                                                </items>
+                                                            </Table>
+                                                            <Button
+                                                                icon="sap-icon://show-edit"
+                                                                visible="{VisibleModel>/visibleCrear}"
+                                                                press="openValorCapitaDialog"
+                                                            />
+                                                            <Button
+                                                                icon="sap-icon://show-edit"
+                                                                visible="{VisibleModel>/visibleCrear}"
+                                                                press="openMaterialesDialog"
+                                                            />
+                                                            <Button
+                                                                visible="{EnabledModel>/enabled}"
+                                                                icon="sap-icon://delete"
+                                                                type="Reject"
+                                                                press="onDeleteLine"
+                                                            />
+                                                        </cells>
+                                                    </ColumnListItem>
+                                                </items>
+                                            </Table>
+                                        </VBox>
+                                    </Panel>
+                                    <Panel
+                                        id="idFbPosModif"
+                                        backgroundDesign="Transparent"
+                                        visible="{VisibleModel>/tablaModif}"
+                                    >
+                                        <VBox id="FragmentTableContentModif">
+                                            <Table
+                                                id="idPosTabModif"
+                                                class="sapUiTinyMargin"
+                                                items="{ path: 'contPos>/posDataModif', templateShareable: false}"
+                                                visible="{VisibleModel>/tablaModif}"
+                                            >
+                                                <headerToolbar>
+                                                    <Toolbar>
+                                                        <content>
+                                                            <Title
+                                                                text="Posiciones"
+                                                                level="H2"
+                                                            />
+                                                            <ToolbarSpacer />
+                                                            <Button
+                                                                visible="{VisibleModel>/plusButton}"
+                                                                icon="sap-icon://add"
+                                                                press="onAddLine"
+                                                                enabled="{EnabledModel>/tablaModif}"
+                                                            />
+                                                        </content>
+                                                    </Toolbar>
+                                                </headerToolbar>
+                                                <columns>
+                                                    <Column width="16em">
+                                                        <Label
+                                                            text="Ramo"
+                                                            required="true"
+                                                        />
+                                                    </Column>
+                                                    <Column width="17em">
+                                                        <Label
+                                                            text="Cobertura a facturar"
+                                                            required="true"
+                                                        />
+                                                    </Column>
+                                                    <Column
+                                                        width="4em"
+                                                        hAlign="Center"
+                                                    >
+                                                        <Label
+                                                            text="Valor cápita"
+                                                            required="true"
+                                                        />
+                                                    </Column>
+                                                    <Column
+                                                        width="5em"
+                                                        hAlign="Center"
+                                                    >
+                                                        <!--visible="{AuxModel>/renovacion}-->
+                                                        <Label
+                                                            text="Vigencia Desde"
+                                                            required="true"
+                                                        />
+                                                    </Column>
+                                                    <Column width="3em">
+                                                        <Label text="" />
+                                                    </Column>
+                                                </columns>
+                                                <items>
+                                                    <ColumnListItem
+                                                        vAlign="Middle"
+                                                    >
+                                                        <cells>
+                                                            <HBox>
+                                                                <Input
+                                                                    class="sapUiTinyMargin"
+                                                                    width="100%"
+                                                                    placeholder="Seleccione clase pedido.."
+                                                                    visible="{=!${AuxModel>/header}}"
+                                                                    value="{contPos>auart}"
+                                                                    editable="{EnabledModel>/tablaModif}"
+                                                                    required="true"
+                                                                    id="clasesolpedModif"
+                                                                    showSuggestion="true"
+                                                                    showValueHelp="true"
+                                                                    valueHelpOnly="true"
+                                                                    valueHelpRequest=".onValueHelpRequest"
+                                                                    change=".onMatnrChange"
+                                                                    suggestionItems="{path: '/SalesDocType', filters : [{ path : 'Id', operator : 'GE', value1 : 'ZO' }, { path : 'Id', operator : 'LE', value1 : 'ZS' } ]}"
+                                                                >
+                                                                    <suggestionItems
+                                                                    >
+                                                                        <core:ListItem
+                                                                            key="{Id}"
+                                                                            text="{Description}"
+                                                                        />
+                                                                    </suggestionItems>
+                                                                </Input>
+                                                                <Input
+                                                                    class="sapUiTinyMargin"
+                                                                    width="80%"
+                                                                    visible="{=${AuxModel>/header}}"
+                                                                    placeholder="Seleccione ramo.."
+                                                                    value="{contPos>auartTxt}"
+                                                                    editable="{EnabledModel>/tabla}"
+                                                                />
+                                                            </HBox>
+                                                            <HBox>
+                                                                <Input
+                                                                    class="sapUiTinyMargin"
+                                                                    width="100%"
+                                                                    placeholder="Seleccione material.."
+                                                                    visible="{=!${AuxModel>/header}}"
+                                                                    value="{contPos>matnr}"
+                                                                    required="true"
+                                                                    editable="{EnabledModel>/tablaModif}"
+                                                                    id="coberturafactModif"
+                                                                    showSuggestion="true"
+                                                                    showValueHelp="true"
+                                                                    valueHelpOnly="true"
+                                                                    valueHelpRequest=".onValueHelpRequest"
+                                                                    change=".onMatnrChange"
+                                                                    suggestionItems="{path: '/MATERIAL_MatGroupSet'}"
+                                                                >
+                                                                    <suggestionItems
+                                                                    >
+                                                                        <core:ListItem
+                                                                            key="{Description}"
+                                                                            text="{Matnr}"
+                                                                        />
+                                                                    </suggestionItems>
+                                                                </Input>
+                                                                <Input
+                                                                    class="sapUiTinyMargin"
+                                                                    width="80%"
+                                                                    visible="{=${AuxModel>/header}}"
+                                                                    placeholder="Seleccione material.."
+                                                                    value="{contPos>matnrTxt}"
+                                                                    editable="{EnabledModel>/tabla}"
+                                                                />
+                                                            </HBox>
+                                                            <!--<Input value="{path: 'contPos>ValorCapita', formatter: '.formatter.formatPrice'}" editable="{EnabledModel>/tablaModif}" change="onValorCapitaChange"></Input>-->
+                                                            <Input
+                                                                value="{contPos>ValorCapita}"
+                                                                editable="{EnabledModel>/tablaModif}"
+                                                                change="onValorCapitaChange"
+                                                            />
+                                                            <DatePicker
+                                                                id="primerafecha"
+                                                                required="true"
+                                                                change="onChangePrimeraFecha"
+                                                                enabled="{EnabledModel>/PrimeraFecha}"
+                                                                value="{path: 'contPos>primeraFecha', type: 'sap.ui.model.odata.type.DateTime', constraints: { displayFormat:'Date' }, formatOptions: { UTC: true, pattern: 'dd/MM/yyyy' } }"
+                                                                valueFormat="dd/MM/yyyy"
+                                                                displayFormat="short"
+                                                            />
+                                                            <Button
+                                                                visible="{EnabledModel>/enabled}"
+                                                                icon="sap-icon://delete"
+                                                                type="Reject"
+                                                                press="onDeleteLine"
+                                                            />
+                                                        </cells>
+                                                    </ColumnListItem>
+                                                </items>
+                                            </Table>
+                                        </VBox>
+                                    </Panel>
+                                </IconTabFilter>
+                                <IconTabFilter
+                                    text="{i18n>tabAdjuntos}"
+                                    key="adjuntos"
+                                    icon="sap-icon://attachment"
+                                    count="{=${AuxModel>/adjuntosLength}}"
+                                >
+                                    <!-- Main documents table -->
+                                    <Table
+                                        id="table-uploadSet"
+                                        sticky="ColumnHeaders,HeaderToolbar"
+                                        width="auto"
+                                        mode="MultiSelect"
+                                        fixedLayout="false"
+                                        inset="true"
+                                        autoPopinMode="true"
+                                        hiddenInPopin="None"
+                                        noDataText="{i18n>noDataAttachments}"
+                                        items="{path: 'documents>/Files', templateShareable: false}"
+                                        selectionChange="onSelectionChange"
+                                    >
+                                        <headerToolbar>
+                                            <OverflowToolbar>
+                                                <Title
+                                                    text="{parts: [{path: 'context>/adjuntosLength'}], formatter: '.formatDocTitle'}"
+                                                    level="H2"
+                                                />
+                                                <ToolbarSpacer />
+                                                <SearchField
+                                                    width="20%"
+                                                    liveChange="onSearch"
+                                                >
+                                                    <layoutData>
+                                                        <OverflowToolbarLayoutData
+                                                            priority="NeverOverflow"
+                                                        />
+                                                    </layoutData>
+                                                </SearchField>
+                                                <ToolbarSeparator />
+                                                <unified:FileUploader
+                                                    id="taskFileUploader"
+                                                    buttonText="{i18n>btnUpload}"
+                                                    buttonOnly="true"
+                                                    icon="sap-icon://upload"
+                                                    iconFirst="true"
+                                                    multiple="false"
+                                                    style="Emphasized"
+                                                    change="onTaskFileSelected"
+                                                    visible="{EnableModel>/enabledDashoard}"
+                                                />
+                                                <!-- <Button
+                                                id="addUrlButton"
+                                                text="{i18n>btnAddUrl}"
+                                                icon="sap-icon://chain-link"
+                                                press="onAddUrlAttachment"
+                                                visible="{EnableModel>/enabledDashoard}"
+                                            /> -->
+                                                <Button
+                                                    id="downloadSelectedButton"
+                                                    text="{i18n>btnDownload}"
+                                                    enabled="false"
+                                                    press="onDownloadFiles"
+                                                />
+                                                <Button
+                                                    id="removeDocumentButton"
+                                                    text="{i18n>btnRemove}"
+                                                    press="onRemoveButtonPress"
+                                                    enabled="false"
+                                                >
+                                                    <layoutData>
+                                                        <OverflowToolbarLayoutData
+                                                            priority="AlwaysOverflow"
+                                                        />
+                                                    </layoutData>
+                                                </Button>
+                                                <Button
+                                                    id="renameButton"
+                                                    text="{i18n>btnRename}"
+                                                    enabled="false"
+                                                    press="onRenameDocument"
+                                                >
+                                                    <layoutData>
+                                                        <OverflowToolbarLayoutData
+                                                            priority="AlwaysOverflow"
+                                                        />
+                                                    </layoutData>
+                                                </Button>
+                                            </OverflowToolbar>
+                                        </headerToolbar>
+
+                                        <dependents>
+                                            <plugins.UploadSetwithTable
+                                                uploadUrl=""
+                                                multiple="false"
+                                                itemRenamed="onDocumentRenamedSuccess"
+                                                onActivated="onPluginActivated"
+                                                cloudFilePickerEnabled="false"
+                                            >
+                                                <rowConfiguration>
+                                                    <upload.UploadItemConfiguration
+                                                        fileNamePath="fileName"
+                                                        mediaTypePath="mediaType"
+                                                        urlPath="url"
+                                                        previewablePath="previewable"
+                                                        fileSizePath="fileSize"
+                                                    />
+                                                </rowConfiguration>
+                                            </plugins.UploadSetwithTable>
+                                        </dependents>
+
+                                        <columns>
+                                            <Column
+                                                id="fileName"
+                                                importance="High"
+                                            >
+                                                <header>
+                                                    <Label
+                                                        text="{i18n>colNombreArchivo}"
+                                                    />
+                                                </header>
+                                            </Column>
+                                            <Column id="status">
+                                                <header>
+                                                    <Label
+                                                        text="{i18n>colStatus}"
+                                                    />
+                                                </header>
+                                            </Column>
+                                            <Column id="fileSize">
+                                                <header>
+                                                    <Label
+                                                        text="{i18n>colTamano}"
+                                                    />
+                                                </header>
+                                            </Column>
+                                            <Column id="lastModified">
+                                                <header>
+                                                    <Label
+                                                        text="{i18n>colUltModificacion}"
+                                                    />
+                                                </header>
+                                            </Column>
+                                            <Column
+                                                id="actionButton"
+                                                importance="High"
+                                            />
+                                        </columns>
+
+                                        <items>
+                                            <ColumnListItem
+                                                highlight="{= ${documents>uploadState} === 'Complete' ? 'Indication05' : null}"
+                                            >
+                                                <cells>
+                                                    <HBox>
+                                                        <Image
+                                                            src="{documents>imageUrl}"
+                                                            class="sapMUSTItemImage sapMUSTItemIcon"
+                                                            visible="{= !!${documents>imageUrl}}"
+                                                        />
+                                                        <core:Icon
+                                                            src="{parts: ['documents>mediaType', 'documents>fileName'], formatter: '.getIconSrc'}"
+                                                            visible="{= !${documents>imageUrl}}"
+                                                            class="sapMUSTItemImage sapMUSTItemIcon"
+                                                        />
+                                                        <VBox
+                                                            class="sapUiTinyMargin sapUiSmallMarginBegin"
+                                                        >
+                                                            <Link
+                                                                text="{documents>fileName}"
+                                                                press="openPreview"
+                                                                class="sapUiTinyMarginBottom"
+                                                            />
+                                                            <Text
+                                                                text="{documents>documentType}"
+                                                            />
+                                                        </VBox>
+                                                    </HBox>
+                                                    <Text
+                                                        text="{documents>status}"
+                                                    />
+                                                    <Text
+                                                        text="{parts: ['documents>fileSize'], formatter: '.getFileSizeWithUnits'}"
+                                                    />
+                                                    <VBox>
+                                                        <Text
+                                                            text="{documents>lastModifiedBy}"
+                                                        />
+                                                        <Text
+                                                            class="sapUiTinyMarginTop"
+                                                            text="{documents>lastmodified}"
+                                                        />
+                                                    </VBox>
+                                                    <Button
+                                                        class="sapUiTinyMarginBegin"
+                                                        type="Transparent"
+                                                        icon="sap-icon://decline"
+                                                        press="onRemoveHandler"
+                                                    />
+                                                </cells>
+                                            </ColumnListItem>
+                                        </items>
+                                    </Table>
+                                </IconTabFilter>
+                                <IconTabFilter
+                                    text="{i18n>tabComentarios}"
+                                    key="comentarios"
+                                    icon="sap-icon://comment"
+                                    count="{= ${CommentsModel>/comentarios}.length }"
+                                >
+                                    <!-- New comment input (visible only for approvers) -->
+                                    <VBox class="sapUiResponsiveContentPadding">
+                                        <FeedInput
+                                            id="txtComentario"
+                                            post=".onSendComment"
+                                            icon="sap-icon://person-placeholder"
+                                            width="100%"
+                                            placeholder="{i18n>placeholderComentario}"
+                                            class="sapUiSmallMarginTopBottom"
+                                        />
+                                        <!-- Comments list using FeedListItem -->
+                                        <List
+                                            id="feedListComments"
+                                            items="{path: 'CommentsModel>/comentarios', templateShareable: false}"
+                                            noDataText="{i18n>noDataComentarios}"
+                                        >
+                                            <FeedListItem
+                                                sender="{CommentsModel>CreatedByName}"
+                                                text="{CommentsModel>Text}"
+                                                timestamp="{CommentsModel>CreatedAt}"
+                                                showIcon="true"
+                                                icon="sap-icon://person-placeholder"
+                                                convertLinksToAnchorTags="None"
+                                            />
+                                        </List>
+                                    </VBox>
+
+                                    <!-- <f:Form
+                                        id="FormChange"
+                                        class="sapUiResponsiveContentPadding"
+                                        editable="true"
+                                    >
+                                        <f:layout>
+                                            <f:ResponsiveGridLayout
+                                                labelSpanXL="3"
+                                                labelSpanL="3"
+                                                labelSpanM="3"
+                                                labelSpanS="12"
+                                                adjustLabelSpan="true"
+                                                emptySpanXL="2"
+                                                emptySpanL="2"
+                                                emptySpanM="2"
+                                                emptySpanS="0"
+                                                columnsXL="1"
+                                                columnsL="1"
+                                                columnsM="1"
+                                                singleContainerFullSize="false"
+                                            />
+                                        </f:layout>
+                                        <f:formContainers>
+                                            <f:FormContainer>
+                                                <f:formElements>
+                                                    <f:FormElement label="Comentarios">
+                                                        <f:fields>
+                                                            <TextArea
+                                                                id="textArea"
+                                                                value="{CommentsModel>/textoLibre}"
+                                                                rows="3"
+                                                            />
+                                                            <Button
+                                                                width="3em"
+                                                                icon="sap-icon://paper-plane"
+                                                                press="onSendComment"
+                                                            />
+                                                        </f:fields>
+                                                    </f:FormElement>
+                                                </f:formElements>
+                                            </f:FormContainer>
+                                        </f:formContainers>
+                                    </f:Form>
+                                    <Table
+                                        id="comentarios"
+                                        items="{CommentsModel>/comentarios}"
+                                    >
+                                        <headerToolbar>
+                                            <Toolbar>
+                                                <content />
+                                            </Toolbar>
+                                        </headerToolbar>
+                                        <columns>
+                                            <Column width="5em">
+                                                <Label
+                                                    text="Usuario"
+                                                    required="true"
+                                                />
+                                            </Column>
+                                            <Column width="10em">
+                                                <Label
+                                                    text="Comentario"
+                                                    required="true"
+                                                />
+                                            </Column>
+                                            <Column width="4em">
+                                                <Label
+                                                    text="Fecha"
+                                                    required="true"
+                                                />
+                                            </Column>
+                                            <Column width="3em">
+                                                <Label text="" />
+                                            </Column>
+                                        </columns>
+                                        <items>
+                                            <ColumnListItem vAlign="Middle">
+                                                <cells>
+                                                    <Text text="{CommentsModel>ernam}" />
+                                                    <Text text="{CommentsModel>comments}" />
+                                                    <DatePicker
+                                                        editable="false"
+                                                        value="{ path: 'CommentsModel>erdat', type: 'sap.ui.model.odata.type.DateTime', constraints: { displayFormat:'Date' }, formatOptions: { UTC: true, pattern: 'dd/MM/yyyy' } }"
+                                                        valueFormat="dd/MM/yyyy"
+                                                        displayFormat="short"
+                                                    />
+                                                    <Button
+                                                        visible="{= ${CommentsModel>existe} !== 'X'}"
+                                                        icon="sap-icon://delete"
+                                                        type="Reject"
+                                                        press="onDeleteCommentLine"
+                                                    />
+                                                </cells>
+                                            </ColumnListItem>
+                                        </items>
+                                    </Table> -->
+                                </IconTabFilter>
+                                <IconTabFilter
+                                    text="Resumen Legales"
+                                    key="Legales"
+                                    icon="sap-icon://comment"
+                                    count="{= ${CommentsModel>/comentarios}.length }"
+                                    visible="false"
+                                >
+                                    <f:Form
+                                        id="FormChangeLegales"
+                                        class="sapUiResponsiveContentPadding"
+                                        editable="true"
+                                    >
+                                        <f:layout>
+                                            <f:ResponsiveGridLayout
+                                                labelSpanXL="12"
+                                                labelSpanL="12"
+                                                labelSpanM="12"
+                                                labelSpanS="12"
+                                                adjustLabelSpan="true"
+                                                emptySpanXL="0"
+                                                emptySpanL="0"
+                                                emptySpanM="0"
+                                                emptySpanS="0"
+                                                columnsXL="1"
+                                                columnsL="1"
+                                                columnsM="1"
+                                                singleContainerFullSize="false"
+                                            />
+                                        </f:layout>
+                                        <f:formContainers>
+                                            <f:FormContainer>
+                                                <f:formElements>
+                                                    <f:FormElement
+                                                        label="Resumen Contrato"
+                                                    >
+                                                        <f:fields>
+                                                            <TextArea
+                                                                id="textAreaLegales"
+                                                                value="{CommentsModel>/textoLibre}"
+                                                                rows="7"
+                                                                width="100%"
+                                                                required="true"
+                                                            />
+                                                            <Button
+                                                                width="3em"
+                                                                icon="sap-icon://paper-plane"
+                                                                press="onSendComment"
+                                                            />
+                                                        </f:fields>
+                                                    </f:FormElement>
+                                                </f:formElements>
+                                            </f:FormContainer>
+                                        </f:formContainers>
+                                    </f:Form>
+                                </IconTabFilter>
+                            </items>
+                        </IconTabBar>
+                        <VBox height="4rem" />
+                    </content>
+                    <footer>
+                        <OverflowToolbar visible="{EnabledModel>/enabled}">
+                            <ToolbarSpacer />
+                            <Button
+                                text="Crear Solicitud"
+                                type="Accept"
+                                press="onSend"
+                            />
+                        </OverflowToolbar>
+                    </footer>
+                </Page>
+            </pages>
+        </App>
+    </Shell>
+</mvc:View>

@@ -1,0 +1,26 @@
+.sapUiVlt.sapUiContentPadding>.sapuiVltCell:not(:last-child) {
+    padding-bottom: 0.1rem;
+    box-sizing: border-box;
+}
+
+.myCustomButton .sapMBtnInner{
+
+    background-color: #d0312a !important;
+  
+    border-color: #d0312a !important;
+  
+    background-image: none !important;
+  
+    text-shadow: none !important;
+    color: white;
+    font: bold 90% monospace;
+    font-size: 1.2rem;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  }
+  
+.myCustomButton > .sapMBtnHoverable {
+      color: white;
+      font: bold 90% monospace;
+      font-size: 1.2rem;
+  
+  }

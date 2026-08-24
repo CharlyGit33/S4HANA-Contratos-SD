@@ -1,0 +1,114 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+    xmlns:l="sap.ui.layout"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:fb="sap.ui.comp.filterbar"
+    xmlns:u="sap.ui.unified"
+    xmlns:html="http://www.w3.org/1999/xhtml"
+>
+    <Dialog
+        contentWidth="60%"
+        showHeader="false"
+        draggable="true"
+        title="Enviar"
+    >
+        <content>
+            <VBox class="sapUiSmallMargin">
+                <f:SimpleForm
+                    id="SimpleFormChange354"
+                    editable="true"
+                    layout="ResponsiveGridLayout"
+                    title="Consulta"
+                    labelSpanXL="3"
+                    labelSpanL="3"
+                    labelSpanM="3"
+                    labelSpanS="12"
+                    adjustLabelSpan="false"
+                    emptySpanXL="4"
+                    emptySpanL="4"
+                    emptySpanM="4"
+                    emptySpanS="0"
+                    columnsXL="1"
+                    columnsL="1"
+                    columnsM="1"
+                    singleContainerFullSize="false"
+                >
+                    <f:content>
+                        <Label text="Usuario" />
+
+                        <Input
+                            id="userSearchInput"
+                            placeholder="Ingrese Nombre"
+                            showSuggestion="true"
+                            width="100%"
+                            suggest="onSuggestUsers"
+                            suggestionItemSelected="onSelectUser"
+                            showTableSuggestionValueHelp="false"
+                            suggestionRows="{
+                                path: 'Users>/ListUsers',
+                                sorter: {
+                                    path: 'userName',
+                                    ascending: false
+                                }
+                            }">
+                            <suggestionColumns>
+                                <Column visible="false">
+                                    <Label text="Usuario" />
+                                </Column>
+                                <Column hAlign="Center">
+                                    <Label text="Datos" />
+                                </Column>
+                                <Column hAlign="Center">
+                                    <Label text="Email" />
+                                </Column>
+                            </suggestionColumns>
+                            <suggestionRows>
+                                <ColumnListItem>
+                                    <Label text="{Users>userName}" />
+                                    <Label text="{Users>givenName} {Users>familyName}" />
+                                    <Label text="{Users>email}" />
+                                </ColumnListItem>
+                            </suggestionRows>
+                        </Input>
+
+                        <!--	<Label text="Fecha" />
+                	<DatePicker editable="true" value="{  path: 'context>/responseRRHH/fecha',
+                                                  type: 'sap.ui.model.odata.type.DateTime',
+                                                  constraints: { 
+                                                      displayFormat:'Date'
+                                                  }, 
+                                                  formatOptions: { 
+                                                    UTC: true,                                                    
+                                                    pattern: 'dd/MM/yyyy'
+                                                  } 
+                                                }" 
+                                        valueFormat="yyyy-MM-dd" displayFormat="short"
+                                        change="onChangeDates" class="sapUiSmallMarginBottom"/> -->
+
+                        <Label text="Comentarios" />
+                        <TextArea
+                            value="{context>/requestLegales/comentario}"
+                            id="txtComentario"
+                            rows="3"
+                        />
+                    </f:content>
+                </f:SimpleForm>
+            </VBox>
+        </content>
+        <beginButton>
+            <Button
+                text="Enviar"
+                type="Accept"
+                press="onEnviarTask"
+            />
+        </beginButton>
+        <endButton>
+            <Button
+                text="Cerrar"
+                type="Reject"
+                press="onCloseDialogConsulta"
+            />
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>
