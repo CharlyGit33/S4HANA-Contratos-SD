@@ -285,10 +285,6 @@ sap.ui.define([
 
                     if (this._sTaskInstanceID) { // 
 
-                        // var taskModel = new JSONModel([]); //startupParameters.taskModel;
-                        // var taskData = taskModel.getData();
-
-                        // Read a GeneralJsonSet usando this.sContrato como Reqno
                         try {
 
                             //General JSON 
@@ -493,9 +489,15 @@ sap.ui.define([
 
                             oThat.setEnableds();
 
-                            //Validar Tarea especial - CONSULTA Y RESPONDER
 
+                            //Obtener Task Definitions
+                            await oThat._getTaskDefinitions();
+
+                            //Validar Tarea especial - CONSULTA Y RESPONDER
                             oThat._getConsultaButton(); //boton consulta
+
+                            //Validar si es Legales para mostrar Adjuntos especiales
+                            oThat._getDocLegales();
 
                             /*if(oThat.getOwnerComponent().getModel("AuxModel").getProperty("/creacion") === false || oThat.getOwnerComponent().getModel("AuxModel").getProperty("/creacion") === undefined){
                                 oThat.getOwnerComponent().getModel("EnabledModel").setProperty("/nroSolped", true);
@@ -527,7 +529,9 @@ sap.ui.define([
                             if (oThat.getOwnerComponent().getModel("AuxModel").getProperty("/creacion") === true) {
                                 oThat.getOwnerComponent().getModel("VisibleModel").setProperty("/headerCoberturasRenov", false);
                             } else if (oThat.getOwnerComponent().getModel("AuxModel").getProperty("/renovacion") === true) {
-                                oThat.getOwnerComponent().getModel("VisibleModel").setProperty("/headerCoberturasRenov", true);
+                                if (oThat.getOwnerComponent().getModel("AuxModel").getProperty("/Cotyp") === 1) {
+                                    oThat.getOwnerComponent().getModel("VisibleModel").setProperty("/headerCoberturasRenov", true);
+                                }
                                 oThat.getOwnerComponent().getModel("VisibleModel").setProperty("/headerCoberturas", false);
                             }
                             $.Component.getModel("context").setProperty("/requestLegales", {});
@@ -541,7 +545,9 @@ sap.ui.define([
                             oThat.onCreateButtonAction(getComponentDataMyInbox);
 
                             oThat.getGerentes($.Component.getModel("context").getData());
-                            oThat.getTextLevelService("0" + oContextWorkflow.level);
+                            //TEXTO DE CONTRATO
+                            oThat.getTextLevelService("0" + oContextWorkflow.header.cotyp, "0" + oContextWorkflow.level);
+
                             sap.ui.core.BusyIndicator.hide();
                             oThat.getOwnerComponent().getModel("VisibleModel").setProperty("/visibleCampo", true);
                             oThat.getOwnerComponent().getModel("VisibleModel").setProperty("/visibleCrear", false);
@@ -555,283 +561,6 @@ sap.ui.define([
                             sap.ui.core.BusyIndicator.hide();
                         }
 
-                        // oThat.getOwnerComponent().getModel("VisibleModel").setProperty("/valorCapitaDialog", false);
-                        // oThat.getOwnerComponent().getModel("VisibleModel").setProperty("/visibleCampo", true);
-                        // oThat.getOwnerComponent().getModel("VisibleModel").setProperty("/visibleCrear", false);
-                        // oThat.getOwnerComponent().getModel("AuxModel").setProperty("/header", true);
-                        // oThat.getOwnerComponent().getModel("AuxModel").setProperty("/adjuntosLength", 0);
-                        // oThat.getOwnerComponent().getModel("CommentsModel").setProperty("/comentarios", []);
-
-                        // // readWfCerrados ya se encarga de: crear/actualizar los modelos "header" y "contPos",
-                        // // completar ValorCapita (itemMat / itemsDialog) y setear el EnabledModel correspondiente,
-                        // // a partir del Reqno pasado (this.sContrato).
-                        // oThat.readWfCerrados(oThat.sContrato).then(function () {
-
-                        //     // Acciones adicionales de la vista, hoy deshabilitadas/adaptadas a S/4HANA on-premise
-                        //     // (se mantienen las llamadas para no romper el flujo si en el futuro se reactivan)
-                        //     oThat.getAdjuntos();
-                        //     oThat.onCreateButtonAction();
-                        //     oThat.getGerentes();
-
-                        //     sap.ui.core.BusyIndicator.hide();
-                        // }).catch(function (oError) {
-                        //     sap.ui.core.BusyIndicator.hide();
-                        //     var sMensaje = (oError && oError.message) ? oError.message : "Error al obtener los datos del contrato";
-                        //     sap.m.MessageToast.show(sMensaje);
-                        // });
-
-
-
-
-
-
-                        //startupParameters.inboxAPI.setShowNavButton(false);
-
-                        // Workflow.onGetTaskContextWorkflow(taskData).then(function (oParameters) {
-                        //     var oContextWorkflow = oThat._settingDescriptions(oParameters);
-                        //     // get task description and add it to the model
-                        //     startupParameters.inboxAPI.getDescription("NA", taskData.InstanceID).done(function (dataDescr) {
-                        //         taskModel.setProperty("/task/Description", dataDescr.Description);
-                        //     }).fail(function (errorText) {
-
-                        //     });
-
-                        //     ///seteo modelos task y context
-                        //     $.Component.setModel(taskModel, "task");
-                        //     var contextModel = new JSONModel(oContextWorkflow);
-                        //     $.Component.setModel(contextModel, "context");
-                        //     var requesterModel = new JSONModel(oContextWorkflow.requester);
-                        //     $.Component.setModel(requesterModel, "requester");
-                        //     var headerModel = new JSONModel(oContextWorkflow.header);
-                        //     oThat.getOwnerComponent().getModel("EnabledModel").setProperty("/cabecera", true);
-                        //     $.Component.getModel("CoberturasRenovModel").setProperty("/coberturas", []);
-
-                        //     if (oContextWorkflow.header.fechaIni !== null && oContextWorkflow.header.fechaIni !== undefined) {
-                        //         var fechaIni = new Date(oContextWorkflow.header.fechaIni);
-                        //         var fechainicioUTC = oThat.getDatesUTC(fechaIni);
-                        //         oContextWorkflow.header.fechaIni = fechainicioUTC;
-                        //     }
-
-                        //     if (oContextWorkflow.header.fechaFin !== null && oContextWorkflow.header.fechaFin !== undefined) {
-                        //         var fechaFin = new Date(oContextWorkflow.header.fechaFin);
-                        //         var fechaFinUTC = oThat.getDatesUTC(fechaFin);
-                        //         oContextWorkflow.header.fechaFin = fechaFinUTC;
-                        //     }
-
-                        //     if (oContextWorkflow.header.fechaFirma !== null && oContextWorkflow.header.fechaFirma !== undefined) {
-                        //         var fechaFirma = new Date(oContextWorkflow.header.fechaFirma);
-                        //         var fechaFirmaUTC = oThat.getDatesUTC(fechaFirma);
-                        //         oContextWorkflow.header.fechaFirma = fechaFirmaUTC;
-                        //     }
-
-                        //     if (oContextWorkflow.header.periodoAjuste !== undefined) {
-                        //         if (oContextWorkflow.header.periodoAjuste < 10) {
-                        //             if (oContextWorkflow.header.periodoAjuste.toString().length < 2) {
-                        //                 oContextWorkflow.header.periodoAjuste = "0" + oContextWorkflow.header.periodoAjuste.toString();
-                        //             } else {
-                        //                 oContextWorkflow.header.periodoAjuste = oContextWorkflow.header.periodoAjuste.toString();
-                        //             }
-
-                        //         } else {
-                        //             oContextWorkflow.header.periodoAjuste = oContextWorkflow.header.periodoAjuste.toString();
-                        //         }
-                        //     } else if (oContextWorkflow.header.perTxt !== undefined) {
-                        //         oContextWorkflow.header.periodoAjuste = "00";
-                        //     }
-
-                        //     if (oContextWorkflow.header.poseeClausula !== undefined) {
-                        //         if (oContextWorkflow.header.poseeClausula === "X") {
-                        //             oContextWorkflow.header.poseeClausula = true;
-                        //         } else if (oContextWorkflow.header.poseeClausula) {
-                        //             oContextWorkflow.header.poseeClausula = true;
-                        //         } else {
-                        //             oContextWorkflow.header.poseeClausula = false;
-                        //         }
-                        //     }
-
-                        //     if (oContextWorkflow.header.montoInicial !== null && oContextWorkflow.header.montoInicial !== undefined) {
-                        //         var montoInicial = oContextWorkflow.header.montoInicial
-                        //         var montoInicialFormater = oThat.formatPrice(montoInicial);
-                        //         oContextWorkflow.header.montoInicial = montoInicialFormater;
-                        //     }
-
-                        //     if (oContextWorkflow.header.rol !== null && oContextWorkflow.header.rol !== undefined) {
-                        //         if (oContextWorkflow.header.rol === "2") {
-                        //             oContextWorkflow.header.kunnr = oContextWorkflow.header.lifnr;
-                        //         }
-                        //     }
-
-                        //     if (oContextWorkflow.header.areaResp !== null && oContextWorkflow.header.areaResp !== undefined) {
-                        //         oThat.byId("areaResponsable").setValue(oContextWorkflow.header.areaResp); //Le seteamos el Area Responsable 
-                        //     }
-
-                        //     oThat._bindItemsComboBoxSociedad(oContextWorkflow.header.cotyp);
-
-                        //     $.Component.setModel(headerModel, "header");
-                        //     oThat.getOwnerComponent().getModel("AuxModel").setProperty("/Cotyp", oContextWorkflow.header.cotyp);
-                        //     switch (oContextWorkflow.header.optyp) {
-                        //         case "C":
-                        //             oThat.getOwnerComponent().getModel("AuxModel").setProperty("/creacion", true);
-                        //             /*oThat.getOwnerComponent().getModel("AuxModel").setProperty("/modificacion", false);
-                        //             oThat.getOwnerComponent().getModel("AuxModel").setProperty("/renovacion", false);*/
-                        //             break;
-                        //         case "M":
-                        //             oThat.getOwnerComponent().getModel("AuxModel").setProperty("/modificacion", true);
-                        //             /*oThat.getOwnerComponent().getModel("AuxModel").setProperty("/creacion", false);
-                        //             oThat.getOwnerComponent().getModel("AuxModel").setProperty("/renovacion", false);*/
-                        //             break;
-                        //         case "R":
-                        //             oThat.getOwnerComponent().getModel("AuxModel").setProperty("/renovacion", true);
-                        //             /*oThat.getOwnerComponent().getModel("AuxModel").setProperty("/modificacion", false);
-                        //             oThat.getOwnerComponent().getModel("AuxModel").setProperty("/creacion", false);*/
-                        //             break;
-                        //     }
-
-                        //     if (oThat.getOwnerComponent().getModel("AuxModel").getProperty("/creacion") === true) {
-
-                        //         if (oContextWorkflow.positions !== undefined) {
-                        //             if (oContextWorkflow.positions.length > 0 && oContextWorkflow.positions[0].auart !== undefined) {
-                        //                 //valor capita
-                        //                 for (var i = 0; i < oContextWorkflow.positions.length; i++) {
-                        //                     oContextWorkflow.positions[i].itemsDialog = oContextWorkflow.positions[i].subposSop;
-                        //                     for (var j = 0; j < oContextWorkflow.positions[i].itemsDialog.length; j++) {
-                        //                         var oObjectDialogCreation = oContextWorkflow.positions[i].itemsDialog[j];
-                        //                         oContextWorkflow.positions[i].itemsDialog[j].ValorCapita = (oObjectDialogCreation.valorCapita) ? formatter.formatPrice(oObjectDialogCreation.valorCapita) : oObjectDialogCreation.ValorCapita;
-                        //                         oContextWorkflow.positions[i].itemsDialog[j].FechaIni = oThat.getDates((oObjectDialogCreation.fechaIni) ? oObjectDialogCreation.fechaIni : oObjectDialogCreation.FechaIni);
-                        //                         oContextWorkflow.positions[i].itemsDialog[j].FechaFin = oThat.getDates((oObjectDialogCreation.fechaFin) ? oObjectDialogCreation.fechaFin : oObjectDialogCreation.FechaFin);
-                        //                     }
-                        //                 }
-                        //                 //coberturas9
-                        //                 for (var i = 0; i < oContextWorkflow.positions.length; i++) {
-                        //                     oContextWorkflow.positions[i].itemMat = oContextWorkflow.positions[i].subposCov;
-                        //                     for (var j = 0; j < oContextWorkflow.positions[i].itemMat.length; j++) {
-                        //                         var oObject = oContextWorkflow.positions[i].itemMat[j];
-                        //                         oContextWorkflow.positions[i].itemMat[j].Item = (oObject.item) ? oObject.item : oObject.Item;
-                        //                         oContextWorkflow.positions[i].itemMat[j].Matnr = (oObject.matnr) ? oObject.matnr : oObject.Matnr;
-                        //                         oContextWorkflow.positions[i].itemMat[j].Description = (oObject.matnrTxt) ? oObject.matnrTxt : oObject.MatnrTxt;
-                        //                         oContextWorkflow.positions[i].itemMat[j].Subitem = (oObject.subitem) ? oObject.subitem : oObject.Subitem;
-                        //                     }
-                        //                 }
-
-                        //                 $.Component.getModel("contPos").setProperty("/posData", oContextWorkflow.positions);
-                        //                 //$.Component.getModel("contPos").setProperty("/posDataModif", oContextWorkflow.positions);
-                        //                 oThat.getOwnerComponent().getModel("VisibleModel").setProperty("/valorCapitaDialog", false);
-
-                        //             }
-                        //         }
-                        //     } else {
-
-                        //         if (oContextWorkflow.positions !== undefined) {
-                        //             if (oContextWorkflow.positions.length > 0 && oContextWorkflow.positions[0].auart !== undefined) {
-                        //                 //valor capita
-                        //                 for (var i = 0; i < oContextWorkflow.positions.length; i++) {
-                        //                     var aSubPosSop = oContextWorkflow.positions[i].subposSop;
-                        //                     oContextWorkflow.positions[i].itemsDialog = aSubPosSop;
-                        //                     oContextWorkflow.positions[i].ValorCapita = (aSubPosSop[0].valorCapita) ? formatter.formatPrice(aSubPosSop[0].valorCapita) : formatter.formatPrice(aSubPosSop[0].ValorCapita);
-                        //                     oContextWorkflow.positions[i].primeraFecha = oThat.getDates((aSubPosSop[0].edatu) ? aSubPosSop[0].edatu : aSubPosSop[0].Edatu);
-
-                        //                     for (var j = 0; j < oContextWorkflow.positions[i].itemsDialog.length; j++) {
-                        //                         var oObjectDialog = oContextWorkflow.positions[i].itemsDialog[j];
-                        //                         oContextWorkflow.positions[i].itemsDialog[j].ValorCapita = formatter.formatPrice(oObjectDialog.valorCapita);
-                        //                         oContextWorkflow.positions[i].itemsDialog[j].FechaIni = oThat.getDates(oObjectDialog.fechaIni);
-                        //                         oContextWorkflow.positions[i].itemsDialog[j].FechaFin = oThat.getDates(oObjectDialog.fechaFin);
-                        //                         oContextWorkflow.positions[i].itemsDialog[j].Subitem = (oObjectDialog.subitem) ? oObjectDialog.subitem : oObjectDialog.Subitem;
-                        //                         oContextWorkflow.positions[i].itemsDialog[j].Reqno = (oObjectDialog.reqno) ? oObjectDialog.reqno : oObjectDialog.Reqno;
-                        //                         oContextWorkflow.positions[i].itemsDialog[j].Item = (oObjectDialog.item) ? oObjectDialog.item : oObjectDialog.Item;
-                        //                     }
-                        //                 }
-
-                        //                 //coberturas
-                        //                 for (var i = 0; i < oContextWorkflow.positions.length; i++) {
-                        //                     if (oContextWorkflow.positions[i].subposCov !== undefined) {
-                        //                         oContextWorkflow.positions[i].itemMat = oContextWorkflow.positions[i].subposCov;
-                        //                         for (var j = 0; j < oContextWorkflow.positions[i].itemMat.length; j++) {
-                        //                             var oObject = oContextWorkflow.positions[i].itemMat[j];
-                        //                             oContextWorkflow.positions[i].itemMat[j].Item = (oObject.item) ? oObject.item : oObject.Item;
-                        //                             oContextWorkflow.positions[i].itemMat[j].Matnr = (oObject.matnr) ? oObject.matnr : oObject.Matnr;
-                        //                             oContextWorkflow.positions[i].itemMat[j].Description = (oObject.matnrTxt) ? oObject.matnrTxt : oObject.MatnrTxt;
-                        //                             oContextWorkflow.positions[i].itemMat[j].Subitem = (oObject.subitem) ? oObject.subitem : oObject.Subitem;
-                        //                         }
-                        //                     }
-                        //                 }
-
-                        //                 //$.Component.getModel("contPos").setProperty("/posData", oContextWorkflow.positions);
-                        //                 $.Component.getModel("contPos").setProperty("/posDataModif", oContextWorkflow.positions);
-
-                        //                 $.Component.getModel("CoberturasRenovModel").setProperty("/coberturas", oContextWorkflow.positions[0].subposCov);
-                        //                 oThat.getOwnerComponent().getModel("VisibleModel").setProperty("/valorCapitaDialog", false);
-
-                        //             }
-                        //         }
-                        //     }
-                        //     oThat.getOwnerComponent().getModel("Datos").setData({
-                        //         TipoContrato: [
-                        //             {
-                        //                 Id: "1",
-                        //                 Description: "Convenio"
-                        //             },
-                        //             {
-                        //                 Id: "2",
-                        //                 Description: "Alquiler"
-                        //             },
-                        //             {
-                        //                 Id: "3",
-                        //                 Description: "Proveedores"
-                        //             },
-                        //             {
-                        //                 Id: "4",
-                        //                 Description: "Otros"
-                        //             }
-                        //         ]
-                        //     });
-
-                        //     oThat.setFieldsFromTipo(oContextWorkflow.header.cotyp);
-
-                        //     oThat.setEnableds();
-
-                        //     /*if(oThat.getOwnerComponent().getModel("AuxModel").getProperty("/creacion") === false || oThat.getOwnerComponent().getModel("AuxModel").getProperty("/creacion") === undefined){
-                        //         oThat.getOwnerComponent().getModel("EnabledModel").setProperty("/nroSolped", true);
-                        //     }*/
-
-                        //     //LOGICA COMENTARIOS
-                        //     oThat.getOwnerComponent().getModel("CommentsModel").setProperty("/comentarios", oContextWorkflow.commtextgral);
-                        //     var comentarios = oThat.getOwnerComponent().getModel("CommentsModel").getData().comentarios;
-
-                        //     if (comentarios !== undefined) {
-                        //         oThat.getOwnerComponent().getModel("AuxModel").setProperty("/comentariosLength", comentarios.length);
-                        //         if (comentarios.length > 0) {
-                        //             for (var i = 0; i < comentarios.length; i++) {
-                        //                 if (comentarios[i].erdat !== null) {
-                        //                     comentarios[i].erdat = oThat.getDates(comentarios[i].erdat);
-                        //                 }
-                        //             }
-                        //         }
-                        //         oThat.getOwnerComponent().getModel("CommentsModel").setProperty("/comentarios", comentarios);
-                        //     } else {
-                        //         oThat.getOwnerComponent().getModel("CommentsModel").setProperty("/comentarios", []);
-                        //     }
-
-                        //     if (oThat.getOwnerComponent().getModel("AuxModel").getProperty("/creacion") === true) {
-                        //         oThat.getOwnerComponent().getModel("VisibleModel").setProperty("/headerCoberturasRenov", false);
-                        //     } else if (oThat.getOwnerComponent().getModel("AuxModel").getProperty("/renovacion") === true) {
-                        //         oThat.getOwnerComponent().getModel("VisibleModel").setProperty("/headerCoberturasRenov", true);
-                        //         oThat.getOwnerComponent().getModel("VisibleModel").setProperty("/headerCoberturas", false);
-                        //     }
-                        //     $.Component.getModel("context").setProperty("/requestLegales", {});
-                        //     $.Component.getModel("context").setProperty("/responseLegales", {});
-                        //     //LOGICA ADJUNTOS
-                        //     oThat.getAdjuntos();
-                        //     oThat.onCreateButtonAction();
-                        //     oThat.getGerentes($.Component.getModel("context").getData());
-                        //     oThat.getTextLevelService("0" + oContextWorkflow.level);
-                        //     sap.ui.core.BusyIndicator.hide();
-                        //     oThat.getOwnerComponent().getModel("VisibleModel").setProperty("/visibleCampo", true);
-                        //     oThat.getOwnerComponent().getModel("VisibleModel").setProperty("/visibleCrear", false);
-                        //     oThat.getOwnerComponent().getModel("AuxModel").setProperty("/header", true);
-                        // }.bind(this)).catch(function (oError) {
-                        //     sap.ui.core.BusyIndicator.hide();
-                        //     sap.m.MessageToast.show(oError);
-                        // });
                     } else {
                         // MODO CREACIÓN STANDALONE — S/4HANA on-premise
                         sap.ui.core.BusyIndicator.hide();
@@ -873,6 +602,11 @@ sap.ui.define([
                 }
             },
 
+            _getTaskDefinitions: async function () {
+                let sTask = await this._loadTask(this._sTaskInstanceID);
+                this.sTaskDefinitions = sTask.TaskDefinitionID.split('_');
+                this.sPasoWF = this.sTaskDefinitions[2];
+            },
             /**
             * Reads the task entity directly from TASKPROCESSING (TaskCollection),
             * without navigating into /Description. Returns a Promise so the
@@ -1155,6 +889,7 @@ sap.ui.define([
                                     oThat.setFieldsFromTipo(oContextWorkflow.header.cotyp);
 
                                     oThat.setEnableds();
+                                    // Obtener boton Consulta / Responder 
                                     oThat._getConsultaButton(); //boton consulta
 
                                     //LOGICA COMENTARIOS
@@ -1235,6 +970,14 @@ sap.ui.define([
                 $.Component.setModel(oEnabledModel, "ConsultaModel");
             },
 
+            _getDocLegales: async function () {
+                let sTask = await this._loadTask(this._sTaskInstanceID);
+                if (sTask.TaskDefinitionID.slice(0, 10) === 'TS90500027') {
+                    $.Component.getModel("ConsultaModel").setProperty("/docLegales", true);
+                }
+                $.Component.getModel("ConsultaModel").setProperty("/docLegalesLength", 0);
+            },
+
             readSociedadService: function (filters) {
                 return new Promise((res, rej) => {
                     this.getOwnerComponent().getModel().read("/COMPANYSet", {
@@ -1244,27 +987,38 @@ sap.ui.define([
                     });
                 });
             },
+            //TEXTO DE CONTRATO
             readTextByLevelService: function (filters) {
                 return new Promise((res, rej) => {
-                    this.getOwnerComponent().getModel().read("/CONTRACTTEXTNIVSet", {
+                    this.getOwnerComponent().getModel("postService").read("/CONTRACTTEXTNIVSet", {
                         filters: filters,
                         success: res,
                         error: rej
                     });
                 });
             },
-            getTextLevelService: function (level) {
+            getTextLevelService: function (cotype, level) {
                 var filters = [
-                    new Filter("Cotyp", "EQ", level)
+                    new Filter("Cotyp", "EQ", cotype),
+                    new Filter("Rlslv", "EQ", level),
+                    new Filter("PasoWF", "EQ", this.sPasoWF),
+
                 ];
+                console.log("getTextLevelService filters >>", { cotype: cotype, level: level, PasoWF: this.sPasoWF });
 
                 oThat.readTextByLevelService(filters).then(function (aData) {
+                    console.log("getTextLevelService response >>", aData);
                     if (aData.results.length > 0) {
+                        console.log("getTextLevelService Comentario >>", aData.results[0].Comentario);
                         $.Component.getModel("header").setProperty("/textLevel", aData.results[0].Comentario);
+                    } else {
+                        console.log("getTextLevelService: 0 resultados, revisar filtro PasoWF");
                     }
+                }).catch(function (oError) {
+                    console.log("getTextLevelService error >>", oError);
                 })
-
             },
+
             getGerentes: function (context) {
                 // IAS SCIM no disponible en S/4HANA on-premise — función deshabilitada
             },
@@ -1327,10 +1081,36 @@ sap.ui.define([
             onUploadCompleted: function () { },
 
             /**
-             * Fired by FileUploader when the user selects a file.
-             * Reads the native File object and uploads it via XHR to TASKPROCESSING.
+             * Fired by el FileUploader de la pestaña "Adjuntos" (id="taskFileUploader").
+             * Nunca marca el flag "_RL": esa pestaña es genérica, cualquier
+             * usuario/tarea puede subir ahí sin distinción.
              */
             onTaskFileSelected: function (oEvent) {
+                this._onTaskFileSelected(oEvent, false);
+            },
+
+            /**
+             * Fired by el FileUploader de la pestaña "Doc. Legales" (id="taskFileUploader_RL").
+             * El botón ya está oculto (visible="{ConsultaModel>/docLegales}") fuera
+             * de la tarea TS90500027 -- acá solo hay una verificación extra por si
+             * ese estado quedó desfasado. El flag "_RL" en sí depende de la PESTAÑA
+             * usada para subir, no del usuario (ver _uploadAttachmentToTask).
+             */
+            onTaskFileSelectedRL: function (oEvent) {
+                if (!this._canEditDocLegales()) {
+                    oEvent.getSource().clear();
+                    this._showError(this._i18n("errorNoPermissionDocLegales"));
+                    return;
+                }
+                this._onTaskFileSelected(oEvent, true);
+            },
+
+            /**
+             * Reads the native File object and uploads it via XHR to TASKPROCESSING.
+             * @param {sap.ui.base.Event} oEvent - evento "change" del FileUploader
+             * @param {boolean} bIsRL - true si se subió desde la pestaña "Doc. Legales"
+             */
+            _onTaskFileSelected: function (oEvent, bIsRL) {
                 var oFileUploader = oEvent.getSource();
                 var oFileList = oEvent.getParameter("files");
                 /** @type {File} */
@@ -1339,10 +1119,10 @@ sap.ui.define([
                 oFileUploader.clear();
 
                 if (!this._sTaskInstanceID) {
-                    this._addPendingAttachment(oFile);
+                    this._addPendingAttachment(oFile, bIsRL);
                     return;
                 }
-                this._uploadAttachmentToTask(oFile);
+                this._uploadAttachmentToTask(oFile, bIsRL);
             },
 
             /**
@@ -1353,8 +1133,9 @@ sap.ui.define([
              * File nativo en "_file" para poder subirlo de verdad en cuanto se obtenga
              * el sInstanceID.
              * @param {File} oFile - native browser File object
+             * @param {boolean} bIsRL - true si se subió desde la pestaña "Doc. Legales"
              */
-            _addPendingAttachment: function (oFile) {
+            _addPendingAttachment: function (oFile, bIsRL) {
                 var oOwner = this.getOwnerComponent();
                 var oDocModel = oOwner.getModel("documents");
                 var aFiles = (oDocModel.getProperty("/Files") || []).slice();
@@ -1372,6 +1153,7 @@ sap.ui.define([
                     _sapOrigin: this._sTaskSapOrigin,
                     _instanceID: null,
                     _id: null,
+                    _isRL: !!bIsRL,
                     _file: oFile
                 });
 
@@ -1385,8 +1167,9 @@ sap.ui.define([
              * POSTs a binary file to TASKPROCESSING Attachments using XHR.
              * Fetches the CSRF token from the shared ODataModel before sending.
              * @param {File} oFile - native browser File object
+             * @param {boolean} [bIsRL] - true si se subió desde la pestaña "Doc. Legales"
              */
-            _uploadAttachmentToTask: function (oFile) {
+            _uploadAttachmentToTask: function (oFile, bIsRL) {
                 var that = this;
 
                 var sUrl = "/sap/opu/odata/IWPGW/TASKPROCESSING;mo;v=2"
@@ -1399,6 +1182,18 @@ sap.ui.define([
                 // (ej. "reporte.xlsx.xlsx"). Por eso mandamos solo el nombre base.
                 var iDot = oFile.name.lastIndexOf(".");
                 var sSlugName = iDot > 0 ? oFile.name.substring(0, iDot) : oFile.name;
+
+                // AttachmentCollection es sap:addressable="false" (ver metadata):
+                // no se puede direccionar una entidad individual por key, por lo
+                // que no existe un UPDATE/MERGE posible después de crear el
+                // adjunto (devuelve 501). El único dato que el backend acepta al
+                // crear es el slug (nombre de archivo), así que el flag "_RL"
+                // (Responsable Legal) se mete ahí. bIsRL lo decide quien llama
+                // según la PESTAÑA usada para subir (ver _onTaskFileSelected /
+                // onTaskFileSelectedRL), no el usuario ni el TaskDefinitionID.
+                if (bIsRL) {
+                    sSlugName += "_RL";
+                }
 
                 BusyIndicator.show(0);
                 MessageToast.show(this._i18n("msgUploadStart", [oFile.name]));
@@ -1487,6 +1282,7 @@ sap.ui.define([
                                     //     that._showError(that._i18n("errorUploadFile", [sErrMsg || oXhr.statusText]));
                                 }
                                 that.getOwnerComponent().getModel('documents').setProperty("/Files", []);
+                                that.getOwnerComponent().getModel("AuxModel").setProperty("/adjuntosLength", 0);
                                 resolve();
                             };
                             oXhr.onerror = function () {
@@ -1721,7 +1517,7 @@ sap.ui.define([
                 if (iIdx !== -1) { aFiles.splice(iIdx, 1); }
                 oDocModel.setProperty("/Files", aFiles);
                 oDocModel.refresh();
-                this.getOwnerComponent().getModel("context").setProperty("/adjuntosLength", aFiles.length);
+                this.getOwnerComponent().getModel("AuxModel").setProperty("/adjuntosLength", aFiles.length);
             },
 
             onDocumentRenamedSuccess: function () { },
@@ -1773,9 +1569,32 @@ sap.ui.define([
                 return sFileName;
             },
 
+            /**
+             * Detecta y saca el flag "_RL" (Responsable Legal) que
+             * _uploadAttachmentToTask sufija al nombre base del archivo antes de
+             * subirlo (único dato que el backend acepta al crear el adjunto, ver
+             * comentario ahí). Devuelve el nombre limpio para mostrar + el flag.
+             * @param {string} sFileName
+             * @returns {{fileName: string, isRL: boolean}}
+             */
+            _extractRLFlag: function (sFileName) {
+                if (!sFileName) { return { fileName: sFileName, isRL: false }; }
+                var iDot = sFileName.lastIndexOf(".");
+                var sBase = iDot > 0 ? sFileName.substring(0, iDot) : sFileName;
+                var sExt = iDot > 0 ? sFileName.substring(iDot) : "";
+
+                if (/_RL$/.test(sBase)) {
+                    return { fileName: sBase.slice(0, -3) + sExt, isRL: true };
+                }
+                return { fileName: sFileName, isRL: false };
+            },
+
             getAdjuntos: function (sSapOrigin, sInstanceID) {
                 // ECM/CMIS no disponible en S/4HANA on-premise — adjuntos deshabilitados
                 oThat.getOwnerComponent().getModel("AuxModel").setProperty("/adjuntosLength", 0);
+                if (oThat.getOwnerComponent().getModel("ConsultaModel")) {
+                    oThat.getOwnerComponent().getModel("ConsultaModel").setProperty("/docLegalesLength", 0);
+                }
                 $.Component.setModel(new JSONModel([]), "documents");
                 this._loadTaskAttachments(sInstanceID, sSapOrigin);
 
@@ -1807,10 +1626,13 @@ sap.ui.define([
                             });
                             var sDownloadUrl = oAtt.Link || (sServiceUrl + "/" + sAttachmentKey + "/$value");
 
+                            var sRawFileName = that._normalizeFileName(
+                                oAtt.FileName || oAtt.FileDisplayName || oAtt.ID
+                            );
+                            var oRLInfo = that._extractRLFlag(sRawFileName);
+
                             return {
-                                fileName: that._normalizeFileName(
-                                    oAtt.FileName || oAtt.FileDisplayName || oAtt.ID
-                                ),
+                                fileName: oRLInfo.fileName,
                                 mediaType: oAtt.mime_type || "application/octet-stream",
                                 documentType: oAtt.mime_type || "",
                                 url: sDownloadUrl,
@@ -1824,7 +1646,9 @@ sap.ui.define([
                                 // keep original for potential detail dialogs
                                 _sapOrigin: oAtt.SAP__Origin,
                                 _instanceID: oAtt.InstanceID,
-                                _id: oAtt.ID
+                                _id: oAtt.ID,
+                                // flag "RL" (Responsable Legal): ver _uploadAttachmentToTask
+                                _isRL: oRLInfo.isRL
                             };
                         });
 
@@ -1833,7 +1657,15 @@ sap.ui.define([
                         if (aFiles.length > 0) {
                             oOwner.getModel("documents").setData({ Files: aFiles });
                         }
-                        oOwner.getModel("AuxModel").setProperty("/adjuntosLength", aFiles.length);
+                        // La tabla de "Doc. Legales" filtra _isRL === true y la de
+                        // "Adjuntos" filtra _isRL === false (mismo array, dos
+                        // bindings distintos, ver App.view.xml); los counters de
+                        // cada IconTabFilter reflejan esa misma partición.
+                        var iRLCount = aFiles.filter(function (oFile) { return oFile._isRL; }).length;
+                        oOwner.getModel("AuxModel").setProperty("/adjuntosLength", aFiles.length - iRLCount);
+                        if (oOwner.getModel("ConsultaModel")) {
+                            oOwner.getModel("ConsultaModel").setProperty("/docLegalesLength", iRLCount);
+                        }
                     }.bind(this),
                     error: function (oError) {
                         var sMsg = "";
@@ -1896,31 +1728,74 @@ sap.ui.define([
                 this.getView().getModel("document").refresh();
             },
 
-
             sendFiles: function (nameFolder, adjuntosList) {
                 // ECM no disponible en S/4HANA on-premise
                 return Promise.resolve();
             },
             // ─── Table toolbar ───────────────────────────────────────────────
 
+            /**
+             * La pestaña "Doc. Legales" (tabla/botones con id sufijado "_RL")
+             * comparte los mismos handlers que la pestaña "Adjuntos" genérica.
+             * Este helper detecta, a partir del control que disparó el evento
+             * (tabla o botón), si corresponde operar sobre la tabla "_RL" o la
+             * genérica.
+             * @param {sap.ui.base.Event} oEvent
+             * @returns {string} "_RL" o ""
+             */
+            _getAttachmentsTableSuffix: function (oEvent) {
+                return oEvent.getSource().getId().slice(-3) === "_RL" ? "_RL" : "";
+            },
+
+            /**
+             * Borrar/subir en "Doc. Legales" solo está permitido cuando la tarea
+             * actual es TS90500027 (ConsultaModel>/docLegales, ver _getDocLegales);
+             * fuera de esa instancia la pestaña queda visible (para poder ver y
+             * descargar) pero de solo lectura.
+             * @returns {boolean}
+             */
+            _canEditDocLegales: function () {
+                var oModel = this.getOwnerComponent().getModel("ConsultaModel");
+                return !!(oModel && oModel.getProperty("/docLegales"));
+            },
+
             onSelectionChange: function (oEvent) {
+                var sSuffix = this._getAttachmentsTableSuffix(oEvent);
+                var bIsRLTable = sSuffix === "_RL";
                 var aSelected = oEvent.getSource().getSelectedContexts();
                 var bAny = aSelected.length > 0;
                 var bSingle = aSelected.length === 1;
+                var bCanEdit = !bIsRLTable || this._canEditDocLegales();
 
-                this.byId("downloadSelectedButton").setEnabled(bAny);
-                this.byId("removeDocumentButton").setEnabled(bSingle);
-                this.byId("renameButton").setEnabled(bSingle);
+                // Descargar siempre está permitido (no hace falta ser la tarea RL);
+                // eliminar y renombrar sí dependen del permiso de "Doc. Legales".
+                this.byId("downloadSelectedButton" + sSuffix).setEnabled(bAny);
+                this.byId("removeDocumentButton" + sSuffix).setEnabled(bSingle && bCanEdit);
+                // El renombrado en "Doc. Legales" queda siempre deshabilitado
+                // (no forma parte de lo habilitado para esa pestaña); solo se
+                // habilita dinámicamente en la pestaña genérica.
+                if (!bIsRLTable) {
+                    this.byId("renameButton").setEnabled(bSingle);
+                }
             },
 
             onSearch: function (oEvent) {
+                var sSuffix = this._getAttachmentsTableSuffix(oEvent);
                 var sQuery = oEvent.getSource().getValue();
-                var aFilters = sQuery ? [new Filter("fileName", FilterOperator.Contains, sQuery)] : [];
-                this.byId("table-uploadSet").getBinding("items").filter(aFilters, "Application");
+
+                // Se reconstruye el filtro completo (partición _isRL + búsqueda)
+                // en cada cambio para no perder la separación entre "Adjuntos" y
+                // "Doc. Legales" (ambas tablas leen el mismo documents>/Files).
+                var aFilters = [new Filter("_isRL", FilterOperator.EQ, sSuffix === "_RL")];
+                if (sQuery) {
+                    aFilters.push(new Filter("fileName", FilterOperator.Contains, sQuery));
+                }
+                this.byId("table-uploadSet" + sSuffix).getBinding("items").filter(aFilters, "Application");
             },
 
-            onDownloadFiles: function () {
-                var oTable = this.byId("table-uploadSet");
+            onDownloadFiles: function (oEvent) {
+                var sSuffix = this._getAttachmentsTableSuffix(oEvent);
+                var oTable = this.byId("table-uploadSet" + sSuffix);
                 oTable.getSelectedContexts().forEach(function (oCtx) {
                     this._triggerDownload(oCtx);
                 }.bind(this));
@@ -1952,8 +1827,9 @@ sap.ui.define([
                 document.body.removeChild(oLink);
             },
 
-            onRenameDocument: function () {
-                var aCtx = this.byId("table-uploadSet").getSelectedContexts();
+            onRenameDocument: function (oEvent) {
+                var sSuffix = this._getAttachmentsTableSuffix(oEvent);
+                var aCtx = this.byId("table-uploadSet" + sSuffix).getSelectedContexts();
                 if (aCtx.length === 1) { this._oUploadPlugin.renameItem(aCtx[0]); }
             },
 
@@ -1965,15 +1841,22 @@ sap.ui.define([
             },
 
             onRemoveHandler: function (oEvent) {
-                this._confirmRemove(oEvent.getSource().getBindingContext("documents"));
+                this._confirmRemove(oEvent.getSource().getBindingContext("documents"), "");
             },
 
-            onRemoveButtonPress: function () {
-                var aCtx = this.byId("table-uploadSet").getSelectedContexts();
-                if (aCtx.length === 1) { this._confirmRemove(aCtx[0]); }
+            onRemoveButtonPress: function (oEvent) {
+                var sSuffix = this._getAttachmentsTableSuffix(oEvent);
+                if (sSuffix === "_RL" && !this._canEditDocLegales()) {
+                    // Defensa extra: el botón ya queda deshabilitado fuera de la
+                    // tarea TS90500027, esto cubre un eventual desfasaje de estado.
+                    this._showError(this._i18n("errorNoPermissionDocLegales"));
+                    return;
+                }
+                var aCtx = this.byId("table-uploadSet" + sSuffix).getSelectedContexts();
+                if (aCtx.length === 1) { this._confirmRemove(aCtx[0], sSuffix); }
             },
 
-            _confirmRemove: function (oContext) {
+            _confirmRemove: function (oContext, sSuffix) {
                 var sFileName = oContext.getProperty("fileName");
                 var oFileData = oContext.getObject();
 
@@ -1987,7 +1870,7 @@ sap.ui.define([
                         initialFocus: MessageBox.Action.CANCEL,
                         onClose: function (sAction) {
                             if (sAction !== MessageBox.Action.YES) { return; }
-                            this._deleteTaskAttachment(oFileData);
+                            this._deleteTaskAttachment(oFileData, sSuffix);
                         }.bind(this)
                     }
                 );
@@ -2000,9 +1883,10 @@ sap.ui.define([
              * @param {object} oFileData - row object from the "documents" model,
              *                             must contain _sapOrigin / _instanceID / _id
              *                             (set by _loadTaskAttachments).
+             * @param {string} [sSuffix] - "_RL" si la tabla es la de "Doc. Legales"
              */
-            _deleteTaskAttachment: function (oFileData) {
-                var oTable = this.byId("table-uploadSet");
+            _deleteTaskAttachment: function (oFileData, sSuffix) {
+                var oTable = this.byId("table-uploadSet" + (sSuffix || ""));
 
                 if (!oFileData || !oFileData._id) {
                     // Adjunto sin metadata de servidor (no debería pasar en este flujo) –
@@ -2231,7 +2115,7 @@ sap.ui.define([
 
                 var aPendingFiles = (oOwner.getModel("documents").getProperty("/Files") || [])
                     .filter(function (oRow) { return !!oRow._file; })
-                    .map(function (oRow) { return oRow._file; });
+                    .map(function (oRow) { return { file: oRow._file, isRL: !!oRow._isRL }; });
 
                 var aPendingComments = (oOwner.getModel("CommentsModel").getProperty("/comentarios") || [])
                     .map(function (oCmt) { return oCmt.comments; })
@@ -2243,7 +2127,8 @@ sap.ui.define([
                 // comentarios todavía no subidos.
                 var fnUploadNext = function () {
                     if (aPendingFiles.length === 0) { return Promise.resolve(); }
-                    return that._uploadAttachmentToTask(aPendingFiles.shift()).then(fnUploadNext);
+                    var oNext = aPendingFiles.shift();
+                    return that._uploadAttachmentToTask(oNext.file, oNext.isRL).then(fnUploadNext);
                 };
                 var fnCommentNext = function () {
                     if (aPendingComments.length === 0) { return Promise.resolve(); }
@@ -3750,7 +3635,7 @@ sap.ui.define([
                 this._dialogMat.open();
             },
 
-            openMaterialesHeaderDialog: function (oEvent) {
+            openMaterialesHeaderDialog: async function (oEvent) {
                 if (!this._dialogMat) {
                     this._dialogMat = sap.ui.xmlfragment("com.nespola.contratoswf.view.dialogs.materialesDialog", this);
                     this.getView().addDependent(this._dialogMat);
@@ -3765,13 +3650,37 @@ sap.ui.define([
                         this.getOwnerComponent().getModel("ValorCapita").setProperty("/", obj);
                     }
                 } else {
-                    var data = this.getView().getModel("dataModificacion").getData().results;
-                    //var obj = oEvent.getSource().getBindingContext("contPos").getObject();
-                    var items = this.catchData(data[0].PositionSet.results, data[0].PositionSet.results[0].Vbeln);
-                    obj = items;
-                    //obj.itemMat = items.mat;
-                    obj.itemMat = this.getOwnerComponent().getModel("ValorCapita").getProperty("/itemMat");
-                    this.getOwnerComponent().getModel("ValorCapita").setProperty("/", obj);
+                    var oHeader = this.getOwnerComponent().getModel("context").getData().header;
+                    var filters = [
+                        //new Filter("Vbeln", "EQ", oHeader.vbeln),
+                        new Filter("Reqno", "EQ", oHeader.reqno)
+                    ];
+                    if (oHeader.banfn) {
+                        filters.push(new Filter("Banfn", "EQ", oHeader.banfn));
+                    }
+
+                    this.getOwnerComponent().getModel("busyModel").setProperty("/page", true);
+                    try {
+                        var aData = await this.readSolicitudService(filters);
+                        this.getOwnerComponent().getModel("dataModificacion").setData(aData);
+
+                        var data = aData.results;
+                        //var obj = oEvent.getSource().getBindingContext("contPos").getObject();
+                        var items = this.catchData(data[0].PositionSet.results, data[0].PositionSet.results[0].Vbeln);
+                        var obj = items;
+                        obj.itemMat = items.mat || this.getOwnerComponent().getModel("ValorCapita").getProperty("/itemMat");
+                        //obj.itemMat = this.getOwnerComponent().getModel("ValorCapita").getProperty("/itemMat");
+                        this.getOwnerComponent().getModel("ValorCapita").setProperty("/", obj);
+                    } catch (err) {
+                        this.getOwnerComponent().getModel("busyModel").setProperty("/page", false);
+                        if (err.responseText !== undefined) {
+                            sap.m.MessageToast.show(JSON.parse(err.responseText).error.message.value);
+                        } else {
+                            sap.m.MessageToast.show("Error");
+                        }
+                        return;
+                    }
+                    this.getOwnerComponent().getModel("busyModel").setProperty("/page", false);
                 }
 
                 this._dialogMat.open();
@@ -3906,7 +3815,37 @@ sap.ui.define([
                 this._dialogValor.open();
             },
 
+            // Popups de solo lectura para las columnas "Valor capita" y "Coberturas" del panel de visualización
+            // (reemplazan las tablas incrustadas dentro de la tabla de posiciones, ver App.view.xml ~L1027).
+            openValorCapitaViewDialog: function (oEvent) {
+                if (!this._dialogValorView) {
+                    this._dialogValorView = sap.ui.xmlfragment("com.nespola.contratoswf.view.dialogs.valorCapitaViewDialog", this);
+                    this.getView().addDependent(this._dialogValorView);
+                }
+                jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this._dialogValorView);
+                var obj = oEvent.getSource().getBindingContext("contPos").getObject();
+                this.getView().setModel(new JSONModel({ items: obj.subposSop || [] }), "ValorCapitaView");
+                this._dialogValorView.open();
+            },
 
+            onCloseValorCapitaViewDialog: function () {
+                this._dialogValorView.close();
+            },
+
+            openCoberturasViewDialog: function (oEvent) {
+                if (!this._dialogCoberturasView) {
+                    this._dialogCoberturasView = sap.ui.xmlfragment("com.nespola.contratoswf.view.dialogs.coberturasViewDialog", this);
+                    this.getView().addDependent(this._dialogCoberturasView);
+                }
+                jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this._dialogCoberturasView);
+                var obj = oEvent.getSource().getBindingContext("contPos").getObject();
+                this.getView().setModel(new JSONModel({ items: obj.subposCov || [] }), "CoberturasView");
+                this._dialogCoberturasView.open();
+            },
+
+            onCloseCoberturasViewDialog: function () {
+                this._dialogCoberturasView.close();
+            },
 
             onDeleteLine: function (oEvent) {
                 var oPosModel = models.contPosModel();

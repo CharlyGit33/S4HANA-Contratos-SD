@@ -1,0 +1,33 @@
+<core:FragmentDefinition
+	xmlns:core="sap.ui.core"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns="sap.m"
+	xmlns:l="sap.ui.layout"
+	xmlns:f="sap.ui.layout.form"
+	xmlns:fb="sap.ui.comp.filterbar"
+	xmlns:u="sap.ui.unified"
+	xmlns:html="http://www.w3.org/1999/xhtml">
+	<Dialog draggable="true" title="Coberturas" contentWidth="30%" contentHeight="45%">
+		<content>
+            <Table
+                items="{CoberturasView>/items}"
+                growing="true" growingThreshold="10">
+                <columns>
+                    <Column>
+                        <Text text="Material" />
+                    </Column>
+                </columns>
+                <items>
+                    <ColumnListItem>
+                        <cells>
+                            <Text text="{CoberturasView>matnrTxt}" />
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+		</content>
+		<endButton>
+			<Button text="{i18n>Cerrar}" type="Default" press="onCloseCoberturasViewDialog"></Button>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

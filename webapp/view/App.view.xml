@@ -1024,6 +1024,7 @@
                                                                 />
                                                             </HBox>
                                                             <!--<Input id="txtValorCapita" value="{contPos>subposSop/0/valorCapita}" visible="{VisibleModel>/visibleCampo}" editable="{EnabledModel>/tabla}" class="sapUiTinyMargin"     width="100%" />-->
+                                                            <!-- Tablas incrustadas reemplazadas por botones que abren un popup de solo lectura (ver openValorCapitaViewDialog / openCoberturasViewDialog en el controller) para evitar tablas anidadas dentro de la tabla de posiciones.
                                                             <Table
                                                                 items="{path:'contPos>subposSop', templateShareable:true}"
                                                                 visible="{VisibleModel>/visibleCampo}"
@@ -1084,6 +1085,19 @@
                                                                     </ColumnListItem>
                                                                 </items>
                                                             </Table>
+                                                            -->
+                                                            <Button
+                                                                text="Valor cápita"
+                                                                icon="sap-icon://display"
+                                                                visible="{VisibleModel>/visibleCampo}"
+                                                                press="openValorCapitaViewDialog"
+                                                            />
+                                                            <Button
+                                                                text="Coberturas"
+                                                                icon="sap-icon://display"
+                                                                visible="{VisibleModel>/visibleCampo}"
+                                                                press="openCoberturasViewDialog"
+                                                            />
                                                             <Button
                                                                 icon="sap-icon://show-edit"
                                                                 visible="{VisibleModel>/visibleCrear}"
@@ -1289,18 +1303,19 @@
                                         autoPopinMode="true"
                                         hiddenInPopin="None"
                                         noDataText="{i18n>noDataAttachments}"
-                                        items="{path: 'documents>/Files', templateShareable: false}"
+                                        items="{path: 'documents>/Files', filters: [{path: '_isRL', operator: 'EQ', value1: false}], templateShareable: false}"
                                         selectionChange="onSelectionChange"
                                     >
                                         <headerToolbar>
                                             <OverflowToolbar>
                                                 <Title
-                                                    text="{parts: [{path: 'context>/adjuntosLength'}], formatter: '.formatDocTitle'}"
+                                                    text="{parts: [{path: 'AuxModel>/adjuntosLength'}], formatter: '.formatDocTitle'}"
                                                     level="H2"
                                                 />
-                                                <ToolbarSpacer />
+                                                
                                                 <SearchField
-                                                    width="20%"
+                                                    id="adjuntosSearchField"
+                                                    width="50%"
                                                     liveChange="onSearch"
                                                 >
                                                     <layoutData>
@@ -1346,7 +1361,7 @@
                                                         />
                                                     </layoutData>
                                                 </Button>
-                                                <Button
+                                                <!-- <Button
                                                     id="renameButton"
                                                     text="{i18n>btnRename}"
                                                     enabled="false"
@@ -1357,7 +1372,7 @@
                                                             priority="AlwaysOverflow"
                                                         />
                                                     </layoutData>
-                                                </Button>
+                                                </Button> -->
                                             </OverflowToolbar>
                                         </headerToolbar>
 
@@ -1413,10 +1428,10 @@
                                                     />
                                                 </header>
                                             </Column>
-                                            <Column
+                                            <!-- <Column
                                                 id="actionButton"
                                                 importance="High"
-                                            />
+                                            /> -->
                                         </columns>
 
                                         <items>
@@ -1463,12 +1478,12 @@
                                                             text="{documents>lastmodified}"
                                                         />
                                                     </VBox>
-                                                    <Button
+                                                    <!-- <Button
                                                         class="sapUiTinyMarginBegin"
                                                         type="Transparent"
                                                         icon="sap-icon://decline"
                                                         press="onRemoveHandler"
-                                                    />
+                                                    /> -->
                                                 </cells>
                                             </ColumnListItem>
                                         </items>
@@ -1605,13 +1620,209 @@
                                     </Table> -->
                                 </IconTabFilter>
                                 <IconTabFilter
-                                    text="Resumen Legales"
+                                    text="Doc. Legales"
                                     key="Legales"
-                                    icon="sap-icon://comment"
-                                    count="{= ${CommentsModel>/comentarios}.length }"
-                                    visible="false"
+                                    icon="sap-icon://attachment"
+                                    iconColor="Critical"
+                                    count="{= ${ConsultaModel>/docLegalesLength}}"
+
                                 >
-                                    <f:Form
+                                    <Table
+                                        id="table-uploadSet_RL"
+                                        sticky="ColumnHeaders,HeaderToolbar"
+                                        width="auto"
+                                        mode="MultiSelect"
+                                        fixedLayout="false"
+                                        inset="true"
+                                        autoPopinMode="true"
+                                        hiddenInPopin="None"
+                                        noDataText="{i18n>noDataAttachments}"
+                                        items="{path: 'documents>/Files', filters: [{path: '_isRL', operator: 'EQ', value1: true}], templateShareable: false}"
+                                        selectionChange="onSelectionChange"
+                                    >
+                                        <headerToolbar>
+                                            <OverflowToolbar>
+                                                <Title
+                                                    text="{parts: [{path: 'ConsultaModel>/docLegalesLength'}], formatter: '.formatDocTitle'}"
+                                                    level="H2"
+                                                />
+                                                
+                                                <SearchField
+                                                    id="adjuntosSearchField_RL"
+                                                    width="50%"
+                                                    liveChange="onSearch"
+                                                >
+                                                    <layoutData>
+                                                        <OverflowToolbarLayoutData
+                                                            priority="NeverOverflow"
+                                                        />
+                                                    </layoutData>
+                                                </SearchField>
+                                                <ToolbarSeparator />
+                                                <unified:FileUploader
+                                                    id="taskFileUploader_RL"
+                                                    buttonText="{i18n>btnUpload}"
+                                                    buttonOnly="true"
+                                                    icon="sap-icon://upload"
+                                                    iconFirst="true"
+                                                    multiple="false"
+                                                    style="Emphasized"
+                                                    change="onTaskFileSelectedRL"
+                                                    visible="{ConsultaModel>/docLegales}"
+                                                />
+                                                <!-- <Button
+                                                id="addUrlButton"
+                                                text="{i18n>btnAddUrl}"
+                                                icon="sap-icon://chain-link"
+                                                press="onAddUrlAttachment"
+                                                visible="{ConsultaModel>/docLegales}"
+                                            /> -->
+                                                <Button
+                                                    id="downloadSelectedButton_RL"
+                                                    text="{i18n>btnDownload}"
+                                                    enabled="false"
+                                                    press="onDownloadFiles"
+                                                />
+                                                <Button
+                                                    id="removeDocumentButton_RL"
+                                                    text="{i18n>btnRemove}"
+                                                    press="onRemoveButtonPress"
+                                                    enabled="false"
+                                                >
+                                                    <layoutData>
+                                                        <OverflowToolbarLayoutData
+                                                            priority="AlwaysOverflow"
+                                                        />
+                                                    </layoutData>
+                                                </Button>
+                                                <!-- <Button
+                                                    id="renameButton_RL"
+                                                    text="{i18n>btnRename}"
+                                                    enabled="false"
+                                                    press="onRenameDocument"
+                                                >
+                                                    <layoutData>
+                                                        <OverflowToolbarLayoutData
+                                                            priority="AlwaysOverflow"
+                                                        />
+                                                    </layoutData>
+                                                </Button> -->
+                                            </OverflowToolbar>
+                                        </headerToolbar>
+
+                                        <dependents>
+                                            <plugins.UploadSetwithTable
+                                                uploadUrl=""
+                                                multiple="false"
+                                                itemRenamed="onDocumentRenamedSuccess"
+                                                onActivated="onPluginActivated"
+                                                cloudFilePickerEnabled="false"
+                                            >
+                                                <rowConfiguration>
+                                                    <upload.UploadItemConfiguration
+                                                        fileNamePath="fileName"
+                                                        mediaTypePath="mediaType"
+                                                        urlPath="url"
+                                                        previewablePath="previewable"
+                                                        fileSizePath="fileSize"
+                                                    />
+                                                </rowConfiguration>
+                                            </plugins.UploadSetwithTable>
+                                        </dependents>
+
+                                        <columns>
+                                            <Column
+                                                id="fileName_RL"
+                                                importance="High"
+                                            >
+                                                <header>
+                                                    <Label
+                                                        text="{i18n>colNombreArchivo}"
+                                                    />
+                                                </header>
+                                            </Column>
+                                            <Column id="status_RL">
+                                                <header>
+                                                    <Label
+                                                        text="{i18n>colStatus}"
+                                                    />
+                                                </header>
+                                            </Column>
+                                            <Column id="fileSize_RL">
+                                                <header>
+                                                    <Label
+                                                        text="{i18n>colTamano}"
+                                                    />
+                                                </header>
+                                            </Column>
+                                            <Column id="lastModified_RL">
+                                                <header>
+                                                    <Label
+                                                        text="{i18n>colUltModificacion}"
+                                                    />
+                                                </header>
+                                            </Column>
+                                            <!-- <Column
+                                                id="actionButton"
+                                                importance="High"
+                                            /> -->
+                                        </columns>
+
+                                        <items>
+                                            <ColumnListItem
+                                                highlight="{= ${documents>uploadState} === 'Complete' ? 'Indication05' : null}"
+                                            >
+                                                <cells>
+                                                    <HBox>
+                                                        <Image
+                                                            src="{documents>imageUrl}"
+                                                            class="sapMUSTItemImage sapMUSTItemIcon"
+                                                            visible="{= !!${documents>imageUrl}}"
+                                                        />
+                                                        <core:Icon
+                                                            src="{parts: ['documents>mediaType', 'documents>fileName'], formatter: '.getIconSrc'}"
+                                                            visible="{= !${documents>imageUrl}}"
+                                                            class="sapMUSTItemImage sapMUSTItemIcon"
+                                                        />
+                                                        <VBox
+                                                            class="sapUiTinyMargin sapUiSmallMarginBegin"
+                                                        >
+                                                            <Link
+                                                                text="{documents>fileName}"
+                                                                press="openPreview"
+                                                                class="sapUiTinyMarginBottom"
+                                                            />
+                                                            <Text
+                                                                text="{documents>documentType}"
+                                                            />
+                                                        </VBox>
+                                                    </HBox>
+                                                    <Text
+                                                        text="{documents>status}"
+                                                    />
+                                                    <Text
+                                                        text="{parts: ['documents>fileSize'], formatter: '.getFileSizeWithUnits'}"
+                                                    />
+                                                    <VBox>
+                                                        <Text
+                                                            text="{documents>lastModifiedBy}"
+                                                        />
+                                                        <Text
+                                                            class="sapUiTinyMarginTop"
+                                                            text="{documents>lastmodified}"
+                                                        />
+                                                    </VBox>
+                                                    <!-- <Button
+                                                        class="sapUiTinyMarginBegin"
+                                                        type="Transparent"
+                                                        icon="sap-icon://decline"
+                                                        press="onRemoveHandler"
+                                                    /> -->
+                                                </cells>
+                                            </ColumnListItem>
+                                        </items>
+                                    </Table>
+                                    <!-- <f:Form
                                         id="FormChangeLegales"
                                         class="sapUiResponsiveContentPadding"
                                         editable="true"
@@ -1657,7 +1868,7 @@
                                                 </f:formElements>
                                             </f:FormContainer>
                                         </f:formContainers>
-                                    </f:Form>
+                                    </f:Form> -->
                                 </IconTabFilter>
                             </items>
                         </IconTabBar>
