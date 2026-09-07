@@ -2478,7 +2478,9 @@ sap.ui.define([
                     this.getOwnerComponent().getModel("VisibleModel").setProperty("/Sociedad", true);
                 }
                 if (selectedTipoRenov === true && selected === "1") {
-                    this.getOwnerComponent().getModel("VisibleModel").setProperty("/SociedadModifRenov", true);
+                    if (!this.getOwnerComponent().getModel("context")) {
+                        this.getOwnerComponent().getModel("VisibleModel").setProperty("/SociedadModifRenov", true);
+                    } else {this.getOwnerComponent().getModel("VisibleModel").setProperty("/SociedadModifRenov", false);} 
                     this.getOwnerComponent().getModel("VisibleModel").setProperty("/Sociedad", false);
                 } else {
                     this.getOwnerComponent().getModel("VisibleModel").setProperty("/SociedadModifRenov", false);
@@ -3650,27 +3652,35 @@ sap.ui.define([
                         this.getOwnerComponent().getModel("ValorCapita").setProperty("/", obj);
                     }
                 } else {
-                    var oHeader = this.getOwnerComponent().getModel("context").getData().header;
-                    var filters = [
-                        //new Filter("Vbeln", "EQ", oHeader.vbeln),
-                        new Filter("Reqno", "EQ", oHeader.reqno)
-                    ];
-                    if (oHeader.banfn) {
-                        filters.push(new Filter("Banfn", "EQ", oHeader.banfn));
-                    }
 
                     this.getOwnerComponent().getModel("busyModel").setProperty("/page", true);
-                    try {
-                        var aData = await this.readSolicitudService(filters);
-                        this.getOwnerComponent().getModel("dataModificacion").setData(aData);
 
-                        var data = aData.results;
-                        //var obj = oEvent.getSource().getBindingContext("contPos").getObject();
-                        var items = this.catchData(data[0].PositionSet.results, data[0].PositionSet.results[0].Vbeln);
-                        var obj = items;
-                        obj.itemMat = items.mat || this.getOwnerComponent().getModel("ValorCapita").getProperty("/itemMat");
-                        //obj.itemMat = this.getOwnerComponent().getModel("ValorCapita").getProperty("/itemMat");
-                        this.getOwnerComponent().getModel("ValorCapita").setProperty("/", obj);
+                    try {
+
+
+                        if (this.getOwnerComponent().getModel("context")) {
+                            var oHeader = this.getOwnerComponent().getModel("context").getData().header;
+                            var filters = [
+                                //new Filter("Vbeln", "EQ", oHeader.vbeln),
+                                new Filter("Reqno", "EQ", oHeader.reqno)
+                            ];
+                            if (oHeader.banfn) {
+                                filters.push(new Filter("Banfn", "EQ", oHeader.banfn));
+                            }
+                            var aData = await this.readSolicitudService(filters);
+                            this.getOwnerComponent().getModel("dataModificacion").setData(aData);
+                            var data = aData.results || undefined;
+                            var items = this.catchData(data[0].PositionSet.results, data[0].PositionSet.results[0].Vbeln) || undefined;
+                            var obj = items;
+                            obj.itemMat = items.mat;
+                            this.getOwnerComponent().getModel("ValorCapita").setProperty("/", obj);
+
+                        } else {
+                            var obj = [];
+                            obj.itemMat = this.getOwnerComponent().getModel("ValorCapita").getProperty("/itemMat");
+                            this.getOwnerComponent().getModel("ValorCapita").setProperty("/", obj);
+                        }
+
                     } catch (err) {
                         this.getOwnerComponent().getModel("busyModel").setProperty("/page", false);
                         if (err.responseText !== undefined) {
